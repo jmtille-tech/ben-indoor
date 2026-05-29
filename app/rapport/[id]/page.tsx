@@ -67,6 +67,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
   const sn = rapport.score_neuroplay || {}
   const scoreGlobal = Object.keys(sn).length > 0
     ? ((Object.values(sn) as number[]).reduce((a: number, b: number) => a + b, 0) / Object.keys(sn).length).toFixed(1)
+    : ex.score_global
 
   return (
     <>
