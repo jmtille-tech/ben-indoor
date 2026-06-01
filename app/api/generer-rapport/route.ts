@@ -94,7 +94,7 @@ Remplace toutes les valeurs par celles issues de tes observations. Sois précis,
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
     })
 
