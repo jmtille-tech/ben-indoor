@@ -110,10 +110,37 @@ export async function POST(req: NextRequest) {
     const rapportData = JSON.parse(cleaned)
  
     // Sauvegarder en Supabase
-    if (mission_id) {
-      const shareToken = generateShareToken()
+    const shareToken = generateShareToken()
+    const missionType = `${type_mission || 'neuroaccess'}-${type_diagnostic || 'cognitif'}`
+ 
+    // Créer automatiquement une mission si aucune n'est sélectionnée
+    let finalMissionId = mission_id
+    if (!finalMissionId && client_nom) {
+      // Trouver le client_id depuis son nom
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('nom', client_nom)
+        .single()
+ 
+      if (clientData) {
+        const { data: newMission } = await supabase
+          .from('missions')
+          .insert({
+            client_id: clientData.id,
+            type: missionType,
+            date_mission: new Date().toISOString().split('T')[0],
+            statut: 'publie'
+          })
+          .select()
+          .single()
+        if (newMission) finalMissionId = newMission.id
+      }
+    }
+ 
+    if (finalMissionId) {
       const rapportPayload = {
-        mission_id,
+        mission_id: finalMissionId,
         executive_summary: rapportData.executive_summary,
         parcours_scores: rapportData.parcours_scores,
         analyse_cognitive: rapportData.analyse_cognitive,
@@ -122,30 +149,25 @@ export async function POST(req: NextRequest) {
         score_neuroplay: rapportData.score_neuroaccess,
         statut: 'publie',
         share_token: shareToken,
-        // Métadonnées de mission
-        type_mission: type_mission || 'neuroaccess',
-        type_diagnostic: type_diagnostic || 'cognitif',
       }
  
       const { data: existing } = await supabase
         .from('rapports')
         .select('id, share_token')
-        .eq('mission_id', mission_id)
+        .eq('mission_id', finalMissionId)
         .single()
  
       if (existing) {
         await supabase.from('rapports').update({
           ...rapportPayload,
           share_token: existing.share_token || shareToken
-        }).eq('mission_id', mission_id)
+        }).eq('mission_id', finalMissionId)
       } else {
         await supabase.from('rapports').insert(rapportPayload)
       }
  
       // Mettre à jour le type de la mission
-      await supabase.from('missions').update({
-        type: `${type_mission || 'neuroaccess'}-${type_diagnostic || 'cognitif'}`
-      }).eq('id', mission_id)
+      await supabase.from('missions').update({ type: missionType }).eq('id', finalMissionId)
     }
  
     return NextResponse.json({ success: true, rapport: rapportData })
