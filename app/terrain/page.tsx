@@ -336,7 +336,7 @@ export default function Terrain() {
     // Créer la mission côté client si aucune sélectionnée
     let finalMissionId = selectedMissionId
     if (!finalMissionId && selectedClientId) {
-      const missionType = (typeMission || 'neuroaccess') + '-' + (typeDiagnostic || 'cognitif')ic || 'cognitif'}\`
+      const missionType = (typeMission || 'neuroaccess') + '-' + (typeDiagnostic || 'cognitif')
       const { data: newMission } = await supabase.from('missions').insert({
         client_id: selectedClientId,
         type: missionType,
