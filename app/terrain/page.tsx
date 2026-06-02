@@ -136,10 +136,9 @@ const allPostesNeuroaccess = protocoleNeuroaccess.flatMap(p =>
   p.postes.map(poste => ({ ...poste, phase: p.phase }))
 )
 
-// ── TYPES ──
 type TypeDiagnostic = 'cognitif' | 'connecte'
 type TypeMission = 'neuroaccess' | 'neurotaste' | 'neuromedia'
-type Etape = 'selection' | 'choix-diagnostic' | 'choix-mission' | 'intro' | 'terrain' | 'generation' | 'fin'
+type Etape = 'choix-diagnostic' | 'choix-mission' | 'selection' | 'intro' | 'terrain' | 'generation' | 'fin'
 
 const REPONSE_SCORES: Record<string, number> = { oui: 10, partiel: 5, non: 0 }
 
@@ -154,7 +153,6 @@ function sanitize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').substring(0, 50)
 }
 
-// ── STYLES COMMUNS ──
 const S = {
   page: { minHeight: '100vh', background: '#0d1520', fontFamily: 'Arial, sans-serif' } as React.CSSProperties,
   center: { minHeight: '100vh', background: '#0d1520', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'Arial, sans-serif' },
@@ -168,7 +166,6 @@ const S = {
   card: { background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px' },
 }
 
-// ── AVATAR ──
 const Avatar = () => (
   <div style={S.avatar}>
     <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -176,7 +173,8 @@ const Avatar = () => (
 )
 
 export default function Terrain() {
-  const [etape, setEtape] = useState<Etape>('selection')
+  // ── ÉTAT — démarre sur choix-diagnostic ──
+  const [etape, setEtape] = useState<Etape>('choix-diagnostic')
   const [typeDiagnostic, setTypeDiagnostic] = useState<TypeDiagnostic | null>(null)
   const [typeMission, setTypeMission] = useState<TypeMission | null>(null)
   const [clients, setClients] = useState<any[]>([])
@@ -200,8 +198,7 @@ export default function Terrain() {
   const [enregistrement, setEnregistrement] = useState(false)
   const [uploadingAudio, setUploadingAudio] = useState(false)
 
-  // Protocole actif selon la mission
-  const allPostes = typeMission === 'neuroaccess' ? allPostesNeuroaccess : allPostesNeuroaccess
+  const allPostes = allPostesNeuroaccess
   const total = allPostes.length
   const poste = allPostes[posteIndex]
   const progression = Math.round((posteIndex / total) * 100)
@@ -338,14 +335,7 @@ export default function Terrain() {
       const res = await fetch('/api/generer-rapport', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          notes: notesAvecScores,
-          scores_calcules: scoresCalcules,
-          client_nom: selectedClient?.nom || 'Diagnostic terrain',
-          mission_id: selectedMissionId || null,
-          type_mission: typeMission,
-          type_diagnostic: typeDiagnostic,
-        })
+        body: JSON.stringify({ notes: notesAvecScores, scores_calcules: scoresCalcules, client_nom: selectedClient?.nom || 'Diagnostic terrain', mission_id: selectedMissionId || null, type_mission: typeMission, type_diagnostic: typeDiagnostic })
       })
       const data = await res.json()
       if (data.success) { setRapport(data.rapport); setEtape('fin') }
@@ -354,7 +344,8 @@ export default function Terrain() {
   }
 
   function resetAll() {
-    setEtape('selection'); setTypeDiagnostic(null); setTypeMission(null)
+    setEtape('choix-diagnostic')
+    setTypeDiagnostic(null); setTypeMission(null)
     setPosteIndex(0); setNotes({}); setNoteActuelle(''); setRapport(null)
     setSelectedClientId(''); setSelectedMissionId(''); setMediasParPoste({})
     setReponsesParPoste({}); setReponsesActuelles({})
@@ -364,53 +355,16 @@ export default function Terrain() {
   const mediasPosteActuel = mediasParPoste[poste?.nom] || []
 
   // ════════════════════════════════════════
-  // ÉTAPE 1 — SÉLECTION CLIENT
-  // ════════════════════════════════════════
-  if (etape === 'selection') return (
-    <main style={S.center}>
-      <Avatar />
-      <h1 style={S.title}>Pour quel client ?</h1>
-      <p style={S.sub}>Sélectionne le client avant de démarrer</p>
-      <div style={{ width: '100%', maxWidth: '360px' }}>
-        <p style={S.label}>Client</p>
-        <select value={selectedClientId} onChange={e => { setSelectedClientId(e.target.value); setSelectedMissionId('') }}
-          style={{ ...S.select, marginBottom: '16px', color: selectedClientId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
-          <option value="">— Sélectionner un client</option>
-          {clients.map(c => <option key={c.id} value={c.id} style={{ background: '#1a2540' }}>{c.nom}</option>)}
-        </select>
-        {selectedClientId && (
-          <>
-            <p style={S.label}>Mission (optionnel)</p>
-            <select value={selectedMissionId} onChange={e => setSelectedMissionId(e.target.value)}
-              style={{ ...S.select, marginBottom: '24px', color: selectedMissionId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
-              <option value="">— Sans mission spécifique</option>
-              {missions.map(m => <option key={m.id} value={m.id} style={{ background: '#1a2540' }}>{m.type} · {m.date_mission}</option>)}
-            </select>
-          </>
-        )}
-        <button onClick={() => selectedClientId && setEtape('choix-diagnostic')} disabled={!selectedClientId}
-          style={{ ...S.btn, maxWidth: '100%', background: selectedClientId ? '#c8f135' : 'rgba(255,255,255,0.1)', color: selectedClientId ? '#0d1520' : 'rgba(255,255,255,0.3)', cursor: selectedClientId ? 'pointer' : 'not-allowed' }}>
-          Continuer →
-        </button>
-      </div>
-    </main>
-  )
-
-  // ════════════════════════════════════════
-  // ÉTAPE 2 — CHOIX DIAGNOSTIC
+  // ÉTAPE 1 — CHOIX DIAGNOSTIC
   // ════════════════════════════════════════
   if (etape === 'choix-diagnostic') return (
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Type de diagnostic</h1>
-      <p style={{ ...S.sub, marginBottom: '28px' }}>
-        Diagnostic pour <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
-      </p>
+      <p style={{ ...S.sub, marginBottom: '28px' }}>Choisis le type de diagnostic à réaliser</p>
       <div style={{ width: '100%', maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-
-        {/* Cognitif */}
         <button onClick={() => { setTypeDiagnostic('cognitif'); setEtape('choix-mission') }}
-          style={{ background: 'rgba(200,241,53,0.05)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer', transition: 'all 0.2s' }}>
+          style={{ background: 'rgba(200,241,53,0.05)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(200,241,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -425,16 +379,11 @@ export default function Terrain() {
             </div>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
-            Analyse comportementale terrain guidée par BEN™. Génération automatique du rapport via IA.
+            Analyse comportementale terrain guidée par BEN&#x2122;. Génération automatique du rapport via IA.
           </p>
         </button>
-
-        {/* Connecté */}
-        <button disabled
-          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>
-            BIENTÔT
-          </div>
+        <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>BIENTÔT</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -446,31 +395,27 @@ export default function Terrain() {
               <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', margin: 0 }}>EDA / HRV · Données biométriques</p>
             </div>
           </div>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
-            Croise les observations terrain avec les données physiologiques en temps réel.
-          </p>
+          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>Croise les observations terrain avec les données physiologiques en temps réel.</p>
         </button>
       </div>
-      <button onClick={() => setEtape('selection')} style={{ ...S.btnGhost, maxWidth: '360px', width: '100%' }}>
-        ← Retour
+      <button onClick={() => window.location.href = '/dashboard'} style={{ ...S.btnGhost, maxWidth: '360px', width: '100%' }}>
+        ← Dashboard
       </button>
     </main>
   )
 
   // ════════════════════════════════════════
-  // ÉTAPE 3 — CHOIX MISSION
+  // ÉTAPE 2 — CHOIX MISSION
   // ════════════════════════════════════════
   if (etape === 'choix-mission') return (
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Quelle mission ?</h1>
       <p style={{ ...S.sub, marginBottom: '28px' }}>
-        Diagnostic Cognitif · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
+        Diagnostic Cognitif · choisis ton offre
       </p>
       <div style={{ width: '100%', maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-
-        {/* Neuroaccess */}
-        <button onClick={() => { setTypeMission('neuroaccess'); setEtape('intro') }}
+        <button onClick={() => { setTypeMission('neuroaccess'); setEtape('selection') }}
           style={{ background: 'rgba(200,241,53,0.05)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(200,241,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -488,13 +433,9 @@ export default function Terrain() {
             Analyse complète du parcours visiteur — avant, pendant et après la visite.
           </p>
         </button>
-
-        {/* Neurotaste */}
         <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>
-            BIENTÔT
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>BIENTÔT</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="7" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
@@ -507,12 +448,8 @@ export default function Terrain() {
             </div>
           </div>
         </button>
-
-        {/* Neuromedia */}
         <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>
-            BIENTÔT
-          </div>
+          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>BIENTÔT</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -537,6 +474,44 @@ export default function Terrain() {
   )
 
   // ════════════════════════════════════════
+  // ÉTAPE 3 — SÉLECTION CLIENT
+  // ════════════════════════════════════════
+  if (etape === 'selection') return (
+    <main style={S.center}>
+      <Avatar />
+      <h1 style={S.title}>Pour quel client ?</h1>
+      <p style={{ ...S.sub, marginBottom: '28px' }}>
+        Mission <strong style={{ color: '#c8f135' }}>Neuroaccess</strong> · Diagnostic Cognitif
+      </p>
+      <div style={{ width: '100%', maxWidth: '360px' }}>
+        <p style={S.label}>Client</p>
+        <select value={selectedClientId} onChange={e => { setSelectedClientId(e.target.value); setSelectedMissionId('') }}
+          style={{ ...S.select, marginBottom: '16px', color: selectedClientId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
+          <option value="">— Sélectionner un client</option>
+          {clients.map(c => <option key={c.id} value={c.id} style={{ background: '#1a2540' }}>{c.nom}</option>)}
+        </select>
+        {selectedClientId && (
+          <>
+            <p style={S.label}>Mission (optionnel)</p>
+            <select value={selectedMissionId} onChange={e => setSelectedMissionId(e.target.value)}
+              style={{ ...S.select, marginBottom: '24px', color: selectedMissionId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
+              <option value="">— Sans mission spécifique</option>
+              {missions.map(m => <option key={m.id} value={m.id} style={{ background: '#1a2540' }}>{m.type} · {m.date_mission}</option>)}
+            </select>
+          </>
+        )}
+        <button onClick={() => selectedClientId && setEtape('intro')} disabled={!selectedClientId}
+          style={{ ...S.btn, maxWidth: '100%', background: selectedClientId ? '#c8f135' : 'rgba(255,255,255,0.1)', color: selectedClientId ? '#0d1520' : 'rgba(255,255,255,0.3)', cursor: selectedClientId ? 'pointer' : 'not-allowed', marginBottom: '12px' }}>
+          Continuer →
+        </button>
+        <button onClick={() => setEtape('choix-mission')} style={{ ...S.btnGhost, width: '100%' }}>
+          ← Retour
+        </button>
+      </div>
+    </main>
+  )
+
+  // ════════════════════════════════════════
   // ÉTAPE 4 — INTRO
   // ════════════════════════════════════════
   if (etape === 'intro') return (
@@ -556,9 +531,7 @@ export default function Terrain() {
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 6px' }}>{p.phase}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {p.postes.map(po => (
-                <span key={po.nom} style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '20px', background: 'rgba(200,241,53,0.08)', border: '0.5px solid rgba(200,241,53,0.2)', color: 'rgba(255,255,255,0.6)' }}>
-                  {po.nom}
-                </span>
+                <span key={po.nom} style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '20px', background: 'rgba(200,241,53,0.08)', border: '0.5px solid rgba(200,241,53,0.2)', color: 'rgba(255,255,255,0.6)' }}>{po.nom}</span>
               ))}
             </div>
           </div>
@@ -577,9 +550,7 @@ export default function Terrain() {
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Ben analyse tes observations...</h1>
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>
-        Génération du rapport Neuroaccess — 20 à 30 secondes
-      </p>
+      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>Génération du rapport Neuroaccess — 20 à 30 secondes</p>
       <div style={{ display: 'flex', gap: '8px' }}>
         {[0, 1, 2].map(i => (
           <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c8f135', animation: `pulse ${0.8 + i * 0.2}s ease-in-out infinite alternate` }} />
@@ -639,9 +610,7 @@ export default function Terrain() {
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={resetAll} style={{ flex: 1, ...S.btnGhost }}>Nouveau diagnostic</button>
-            <button onClick={() => window.location.href = '/dashboard'} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
-              Dashboard →
-            </button>
+            <button onClick={() => window.location.href = '/dashboard'} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>Dashboard →</button>
           </div>
         </div>
       )}
@@ -653,7 +622,6 @@ export default function Terrain() {
   // ════════════════════════════════════════
   return (
     <main style={S.page}>
-      {/* Header */}
       <div style={{ background: '#111d30', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', border: '1.5px solid #c8f135', flexShrink: 0 }}>
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -664,22 +632,16 @@ export default function Terrain() {
         </div>
         <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{posteIndex + 1}/{total}</span>
         <button onClick={() => { if (window.confirm('Quitter ? Tes notes seront perdues.')) window.location.href = '/dashboard' }}
-          style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '20px', cursor: 'pointer', padding: '4px 8px' }}>✕</button>
+          style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '20px', cursor: 'pointer', padding: '4px 8px' }}>&#x2715;</button>
       </div>
-
-      {/* Barre progression */}
       <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)' }}>
         <div style={{ height: '3px', width: `${progression}%`, background: '#c8f135', transition: 'width 0.3s' }} />
       </div>
-
       <div style={{ padding: '20px' }}>
-        {/* Titre poste */}
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Poste {posteIndex + 1}</p>
           <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: '700', margin: 0 }}>{poste.nom}</h2>
         </div>
-
-        {/* Questions */}
         <div style={{ ...S.card, marginBottom: '12px' }}>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 14px' }}>Observer & évaluer</p>
           {poste.questions.map((q, i) => {
@@ -698,7 +660,7 @@ export default function Terrain() {
                     return (
                       <button key={val} onClick={() => setReponse(i, val)}
                         style={{ flex: 1, padding: '8px', borderRadius: '8px', border: `1px solid ${c.border}`, background: c.bg, color: c.text, fontSize: '13px', fontWeight: '600', cursor: 'pointer', textTransform: 'capitalize', transition: 'all 0.15s' }}>
-                        {val === 'oui' ? '✓ Oui' : val === 'partiel' ? '~ Partiel' : '✗ Non'}
+                        {val === 'oui' ? '&#x2713; Oui' : val === 'partiel' ? '~ Partiel' : '&#x2717; Non'}
                       </button>
                     )
                   })}
@@ -714,14 +676,10 @@ export default function Terrain() {
             </div>
           )}
         </div>
-
-        {/* Question neuro */}
         <div style={{ background: 'rgba(200,241,53,0.05)', borderRadius: '12px', padding: '14px', marginBottom: '12px', border: '0.5px solid rgba(200,241,53,0.15)' }}>
           <p style={{ fontSize: '11px', color: '#c8f135', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Question neuro</p>
           <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', margin: 0, lineHeight: 1.6 }}>{poste.neuro}</p>
         </div>
-
-        {/* Médias */}
         <div style={{ background: 'rgba(55,138,221,0.05)', borderRadius: '12px', padding: '14px', marginBottom: '12px', border: '0.5px solid rgba(55,138,221,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: mediasPosteActuel.length > 0 ? '12px' : '0' }}>
             <p style={{ fontSize: '11px', color: 'rgba(55,138,221,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
@@ -736,7 +694,7 @@ export default function Terrain() {
               </button>
               <button onClick={toggleEnregistrement} disabled={uploadingAudio}
                 style={{ background: enregistrement ? 'rgba(255,59,48,0.2)' : 'rgba(255,149,0,0.15)', border: enregistrement ? '1px solid rgba(255,59,48,0.5)' : '1px solid rgba(255,149,0,0.3)', borderRadius: '8px', color: enregistrement ? 'rgb(255,59,48)' : 'rgba(255,149,0,0.9)', fontSize: '12px', fontWeight: '600', padding: '5px 10px', cursor: 'pointer' }}>
-                {uploadingAudio ? 'Envoi...' : enregistrement ? '⏹ Stop' : 'Vocal'}
+                {uploadingAudio ? 'Envoi...' : enregistrement ? 'Stop' : 'Vocal'}
               </button>
               <button onClick={() => droneInputRef.current?.click()} disabled={uploadingDrone}
                 style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '8px', color: 'rgba(139,92,246,0.9)', fontSize: '12px', fontWeight: '600', padding: '5px 10px', cursor: uploadingDrone ? 'wait' : 'pointer', opacity: uploadingDrone ? 0.6 : 1 }}>
@@ -749,7 +707,7 @@ export default function Terrain() {
               {mediasPosteActuel.map(m => (
                 <div key={m.id} style={{ width: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${m.type === 'drone' ? 'rgba(139,92,246,0.4)' : 'rgba(55,138,221,0.3)'}` }}>
                   {m.type === 'audio'
-                    ? <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,149,0,0.1)', fontSize: '24px' }}>🎙</div>
+                    ? <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,149,0,0.1)', fontSize: '24px' }}>&#x1F399;</div>
                     : <img src={m.url} alt={m.nom} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   }
                 </div>
@@ -757,20 +715,17 @@ export default function Terrain() {
             </div>
           )}
         </div>
-
-        {/* Notes */}
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Observations complémentaires</p>
           <textarea value={noteActuelle} onChange={e => setNoteActuelle(e.target.value)} placeholder="Note tes observations ici..." rows={3}
             style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '14px', resize: 'none', fontFamily: 'Arial', boxSizing: 'border-box', lineHeight: 1.6 }} />
         </div>
-
         <div style={{ display: 'flex', gap: '10px' }}>
           {posteIndex > 0 && (
-            <button onClick={precedent} style={{ flex: 1, ...S.btnGhost }}>← Précédent</button>
+            <button onClick={precedent} style={{ flex: 1, ...S.btnGhost }}>&#x2190; Précédent</button>
           )}
           <button onClick={sauvegarderEtContinuer} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
-            {posteIndex < total - 1 ? 'Suivant →' : 'Générer le rapport ✓'}
+            {posteIndex < total - 1 ? 'Suivant &#x2192;' : 'Générer le rapport &#x2713;'}
           </button>
         </div>
       </div>
