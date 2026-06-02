@@ -1,28 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
- 
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
- 
+
 function generateShareToken(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
   return Array.from({ length: 32 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }
- 
+
 // ── PROMPT NEUROACCESS ──
 function buildPromptNeuroaccess(notesTexte: string, clientNom: string): string {
   return `Tu es BEN™, outil d'analyse IA propriétaire de Neuroplay Xpériences, développé à partir de plus de 20 ans d'expertise terrain en expérience visiteur.
- 
+
 Tu viens de réaliser un diagnostic Neuroaccess pour ${clientNom}. Ce diagnostic analyse l'intégralité du parcours visiteur — avant, pendant et après la visite — selon une grille d'observation neuro-comportementale structurée.
- 
+
 Voici tes observations terrain, poste par poste :
- 
+
 ${notesTexte}
- 
+
 Sur la base de ces observations, génère un rapport structuré au format JSON strict.
 IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks. Commence par { et termine par }.
- 
+
 {
   "executive_summary": {
     "score_global": 7,
@@ -78,18 +78,19 @@ IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks
     "sortie_fidelisation": 4
   }
 }
- 
+
 Remplace toutes les valeurs par celles issues de tes observations terrain. Sois précis, actionnable, orienté expérience visiteur réelle.`
 }
- 
+
 export async function POST(req: NextRequest) {
   try {
     const { notes, scores_calcules, client_nom, client_id, mission_id, type_mission, type_diagnostic } = await req.json()
- 
+    console.log('BEN API reçu:', { client_nom, client_id, mission_id, type_mission, type_diagnostic })
+
     const notesTexte = Object.entries(notes)
       .map(([poste, note]) => `## ${poste}\n${note}`)
       .join('\n\n')
- 
+
     // Sélectionner le prompt selon le type de mission
     let prompt: string
     if (type_mission === 'neuroaccess') {
@@ -98,21 +99,21 @@ export async function POST(req: NextRequest) {
       // Fallback générique pour les futures missions
       prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement')
     }
- 
+
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
     })
- 
+
     const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
     const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     const rapportData = JSON.parse(cleaned)
- 
+
     // Sauvegarder en Supabase
     const shareToken = generateShareToken()
     const missionType = `${type_mission || 'neuroaccess'}-${type_diagnostic || 'cognitif'}`
- 
+
     // Créer automatiquement une mission si aucune n'est sélectionnée
     let finalMissionId = mission_id
     if (!finalMissionId && client_id) {
@@ -126,9 +127,11 @@ export async function POST(req: NextRequest) {
         })
         .select()
         .single()
+      console.log('Nouvelle mission créée:', newMission, 'finalMissionId:', finalMissionId)
       if (newMission) finalMissionId = newMission.id
     }
- 
+    console.log('finalMissionId final:', finalMissionId)
+
     if (finalMissionId) {
       const rapportPayload = {
         mission_id: finalMissionId,
@@ -142,13 +145,13 @@ export async function POST(req: NextRequest) {
         share_token: shareToken,
         nom_rapport: `${type_mission || 'neuroaccess'}-${type_diagnostic || 'cognitif'}`,
       }
- 
+
       const { data: existing } = await supabase
         .from('rapports')
         .select('id, share_token')
         .eq('mission_id', finalMissionId)
         .single()
- 
+
       if (existing) {
         await supabase.from('rapports').update({
           ...rapportPayload,
@@ -157,11 +160,11 @@ export async function POST(req: NextRequest) {
       } else {
         await supabase.from('rapports').insert(rapportPayload)
       }
- 
+
       // Mettre à jour le type de la mission
       await supabase.from('missions').update({ type: missionType }).eq('id', finalMissionId)
     }
- 
+
     return NextResponse.json({ success: true, rapport: rapportData })
   } catch (error: any) {
     console.error('Erreur génération rapport:', error)
