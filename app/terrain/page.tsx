@@ -146,7 +146,7 @@ function calculerScorePoste(reponses: Record<string, string>): number {
   const vals = Object.values(reponses)
   if (vals.length === 0) return 5
   const total = vals.reduce((sum, r) => sum + (REPONSE_SCORES[r] ?? 5), 0)
-  return Math.round((total / vals.length) / 10)
+  return Math.round(total / vals.length)
 }
 
 function sanitize(str: string): string {
@@ -490,16 +490,7 @@ export default function Terrain() {
           <option value="">— Sélectionner un client</option>
           {clients.map(c => <option key={c.id} value={c.id} style={{ background: '#1a2540' }}>{c.nom}</option>)}
         </select>
-        {selectedClientId && (
-          <>
-            <p style={S.label}>Mission (optionnel)</p>
-            <select value={selectedMissionId} onChange={e => setSelectedMissionId(e.target.value)}
-              style={{ ...S.select, marginBottom: '24px', color: selectedMissionId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
-              <option value="">— Sans mission spécifique</option>
-              {missions.map(m => <option key={m.id} value={m.id} style={{ background: '#1a2540' }}>{m.type} · {m.date_mission}</option>)}
-            </select>
-          </>
-        )}
+
         <button onClick={() => selectedClientId && setEtape('intro')} disabled={!selectedClientId}
           style={{ ...S.btn, maxWidth: '100%', background: selectedClientId ? '#c8f135' : 'rgba(255,255,255,0.1)', color: selectedClientId ? '#0d1520' : 'rgba(255,255,255,0.3)', cursor: selectedClientId ? 'pointer' : 'not-allowed', marginBottom: '12px' }}>
           Continuer →
