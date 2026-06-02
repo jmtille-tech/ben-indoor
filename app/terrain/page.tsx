@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
- 
+
 // ── PROTOCOLE NEUROACCESS ──
 const protocoleNeuroaccess = [
   {
@@ -131,28 +131,28 @@ const protocoleNeuroaccess = [
     ]
   }
 ]
- 
+
 const allPostesNeuroaccess = protocoleNeuroaccess.flatMap(p =>
   p.postes.map(poste => ({ ...poste, phase: p.phase }))
 )
- 
+
 type TypeDiagnostic = 'cognitif' | 'connecte'
 type TypeMission = 'neuroaccess' | 'neurotaste' | 'neuromedia'
 type Etape = 'choix-diagnostic' | 'choix-mission' | 'selection' | 'intro' | 'terrain' | 'generation' | 'fin'
- 
+
 const REPONSE_SCORES: Record<string, number> = { oui: 10, partiel: 5, non: 0 }
- 
+
 function calculerScorePoste(reponses: Record<string, string>): number {
   const vals = Object.values(reponses)
   if (vals.length === 0) return 5
   const total = vals.reduce((sum, r) => sum + (REPONSE_SCORES[r] ?? 5), 0)
   return Math.round(total / vals.length)
 }
- 
+
 function sanitize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').substring(0, 50)
 }
- 
+
 const S = {
   page: { minHeight: '100vh', background: '#0d1520', fontFamily: 'Arial, sans-serif' } as React.CSSProperties,
   center: { minHeight: '100vh', background: '#0d1520', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'Arial, sans-serif' },
@@ -165,13 +165,13 @@ const S = {
   label: { color: 'rgba(255,255,255,0.3)', fontSize: '11px', textTransform: 'uppercase' as const, letterSpacing: '0.1em', margin: '0 0 8px' },
   card: { background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px' },
 }
- 
+
 const Avatar = () => (
   <div style={S.avatar}>
     <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
   </div>
 )
- 
+
 export default function Terrain() {
   // ── ÉTAT — démarre sur choix-diagnostic ──
   const [etape, setEtape] = useState<Etape>('choix-diagnostic')
@@ -197,30 +197,30 @@ export default function Terrain() {
   const audioChunksRef = useRef<Blob[]>([])
   const [enregistrement, setEnregistrement] = useState(false)
   const [uploadingAudio, setUploadingAudio] = useState(false)
- 
+
   const allPostes = allPostesNeuroaccess
   const total = allPostes.length
   const poste = allPostes[posteIndex]
   const progression = Math.round((posteIndex / total) * 100)
   const selectedClient = clients.find(c => c.id === selectedClientId)
- 
+
   useEffect(() => {
     supabase.from('clients').select('id, nom').eq('statut', 'actif').then(({ data }) => {
       if (data) setClients(data)
     })
   }, [])
- 
+
   useEffect(() => {
     if (!selectedClientId) return
     supabase.from('missions').select('id, type, date_mission').eq('client_id', selectedClientId).order('created_at', { ascending: false }).then(({ data }) => {
       if (data) setMissions(data)
     })
   }, [selectedClientId])
- 
+
   function setReponse(questionIndex: number, valeur: string) {
     setReponsesActuelles(prev => ({ ...prev, [questionIndex]: valeur }))
   }
- 
+
   async function handleUploadPoste(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
     if (!files || !selectedClientId) return
@@ -242,7 +242,7 @@ export default function Terrain() {
     setUploadingPoste(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
- 
+
   async function handleUploadDrone(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
     if (!files || !selectedClientId) return
@@ -263,7 +263,7 @@ export default function Terrain() {
     setUploadingDrone(false)
     if (droneInputRef.current) droneInputRef.current.value = ''
   }
- 
+
   const toggleEnregistrement = async () => {
     if (enregistrement) { mediaRecorderRef.current?.stop(); setEnregistrement(false); return }
     try {
@@ -292,7 +292,7 @@ export default function Terrain() {
       setEnregistrement(true)
     } catch { setErreur('Micro non accessible') }
   }
- 
+
   function sauvegarderEtContinuer() {
     const nouvellesNotes = { ...notes }
     if (noteActuelle.trim()) { nouvellesNotes[poste.nom] = noteActuelle; setNotes(nouvellesNotes) }
@@ -309,7 +309,7 @@ export default function Terrain() {
       genererRapport(nouvellesNotes, nouvellesReponses)
     }
   }
- 
+
   function precedent() {
     if (posteIndex > 0) {
       const prev = allPostes[posteIndex - 1]
@@ -318,7 +318,7 @@ export default function Terrain() {
       setPosteIndex(posteIndex - 1)
     }
   }
- 
+
   async function genererRapport(notesFinales: Record<string, string>, reponsesFinales: Record<string, Record<string, string>>) {
     setEtape('generation')
     setErreur('')
@@ -343,7 +343,7 @@ export default function Terrain() {
       else { setErreur(data.error || 'Erreur'); setEtape('fin') }
     } catch (e: any) { setErreur(e.message); setEtape('fin') }
   }
- 
+
   function resetAll() {
     setEtape('choix-diagnostic')
     setTypeDiagnostic(null); setTypeMission(null)
@@ -351,10 +351,10 @@ export default function Terrain() {
     setSelectedClientId(''); setSelectedMissionId(''); setMediasParPoste({})
     setReponsesParPoste({}); setReponsesActuelles({})
   }
- 
+
   const scoreColor = (s: number) => s >= 7 ? '#c8f135' : s >= 5 ? '#EF9F27' : '#E24B4A'
   const mediasPosteActuel = mediasParPoste[poste?.nom] || []
- 
+
   // ════════════════════════════════════════
   // ÉTAPE 1 — CHOIX DIAGNOSTIC
   // ════════════════════════════════════════
@@ -404,7 +404,7 @@ export default function Terrain() {
       </button>
     </main>
   )
- 
+
   // ════════════════════════════════════════
   // ÉTAPE 2 — CHOIX MISSION
   // ════════════════════════════════════════
@@ -473,7 +473,7 @@ export default function Terrain() {
       </button>
     </main>
   )
- 
+
   // ════════════════════════════════════════
   // ÉTAPE 3 — SÉLECTION CLIENT
   // ════════════════════════════════════════
@@ -491,7 +491,17 @@ export default function Terrain() {
           <option value="">— Sélectionner un client</option>
           {clients.map(c => <option key={c.id} value={c.id} style={{ background: '#1a2540' }}>{c.nom}</option>)}
         </select>
- 
+
+        {selectedClientId && missions.length > 0 && (
+          <>
+            <p style={S.label}>Mission</p>
+            <select value={selectedMissionId} onChange={e => setSelectedMissionId(e.target.value)}
+              style={{ ...S.select, marginBottom: '16px', color: selectedMissionId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
+              <option value="">— Sans mission spécifique</option>
+              {missions.map(m => <option key={m.id} value={m.id} style={{ background: '#1a2540' }}>{m.type} · {m.date_mission}</option>)}
+            </select>
+          </>
+        )}
         <button onClick={() => selectedClientId && setEtape('intro')} disabled={!selectedClientId}
           style={{ ...S.btn, maxWidth: '100%', background: selectedClientId ? '#c8f135' : 'rgba(255,255,255,0.1)', color: selectedClientId ? '#0d1520' : 'rgba(255,255,255,0.3)', cursor: selectedClientId ? 'pointer' : 'not-allowed', marginBottom: '12px' }}>
           Continuer →
@@ -502,7 +512,7 @@ export default function Terrain() {
       </div>
     </main>
   )
- 
+
   // ════════════════════════════════════════
   // ÉTAPE 4 — INTRO
   // ════════════════════════════════════════
@@ -534,7 +544,7 @@ export default function Terrain() {
       </button>
     </main>
   )
- 
+
   // ════════════════════════════════════════
   // ÉTAPE 5 — GÉNÉRATION
   // ════════════════════════════════════════
@@ -551,7 +561,7 @@ export default function Terrain() {
       <style>{`@keyframes pulse { from { opacity: 0.2; transform: scale(0.8); } to { opacity: 1; transform: scale(1.2); } }`}</style>
     </main>
   )
- 
+
   // ════════════════════════════════════════
   // ÉTAPE 6 — FIN
   // ════════════════════════════════════════
@@ -608,7 +618,7 @@ export default function Terrain() {
       )}
     </main>
   )
- 
+
   // ════════════════════════════════════════
   // ÉTAPE TERRAIN
   // ════════════════════════════════════════
