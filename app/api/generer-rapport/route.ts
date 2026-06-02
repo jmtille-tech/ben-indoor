@@ -84,7 +84,7 @@ Remplace toutes les valeurs par celles issues de tes observations terrain. Sois 
  
 export async function POST(req: NextRequest) {
   try {
-    const { notes, scores_calcules, client_nom, mission_id, type_mission, type_diagnostic } = await req.json()
+    const { notes, scores_calcules, client_nom, client_id, mission_id, type_mission, type_diagnostic } = await req.json()
  
     const notesTexte = Object.entries(notes)
       .map(([poste, note]) => `## ${poste}\n${note}`)
@@ -115,27 +115,18 @@ export async function POST(req: NextRequest) {
  
     // Créer automatiquement une mission si aucune n'est sélectionnée
     let finalMissionId = mission_id
-    if (!finalMissionId && client_nom) {
-      // Trouver le client_id depuis son nom
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('nom', client_nom)
+    if (!finalMissionId && client_id) {
+      const { data: newMission } = await supabase
+        .from('missions')
+        .insert({
+          client_id: client_id,
+          type: missionType,
+          date_mission: new Date().toISOString().split('T')[0],
+          statut: 'publie'
+        })
+        .select()
         .single()
- 
-      if (clientData) {
-        const { data: newMission } = await supabase
-          .from('missions')
-          .insert({
-            client_id: clientData.id,
-            type: missionType,
-            date_mission: new Date().toISOString().split('T')[0],
-            statut: 'publie'
-          })
-          .select()
-          .single()
-        if (newMission) finalMissionId = newMission.id
-      }
+      if (newMission) finalMissionId = newMission.id
     }
  
     if (finalMissionId) {
@@ -147,8 +138,9 @@ export async function POST(req: NextRequest) {
         analyse_comportementale: rapportData.analyse_comportementale,
         synthese: rapportData.synthese,
         score_neuroplay: rapportData.score_neuroaccess,
-        statut: 'publie',
+        publie: true,
         share_token: shareToken,
+        nom_rapport: `${type_mission || 'neuroaccess'}-${type_diagnostic || 'cognitif'}`,
       }
  
       const { data: existing } = await supabase
