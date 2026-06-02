@@ -335,7 +335,7 @@ export default function Terrain() {
       const res = await fetch('/api/generer-rapport', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: notesAvecScores, scores_calcules: scoresCalcules, client_nom: selectedClient?.nom || 'Diagnostic terrain', mission_id: selectedMissionId || null, type_mission: typeMission, type_diagnostic: typeDiagnostic })
+        body: JSON.stringify({ notes: notesAvecScores, scores_calcules: scoresCalcules, client_nom: selectedClient?.nom || 'Diagnostic terrain', client_id: selectedClientId || null, mission_id: selectedMissionId || null, type_mission: typeMission, type_diagnostic: typeDiagnostic })
       })
       const data = await res.json()
       if (data.success) { setRapport(data.rapport); setEtape('fin') }
