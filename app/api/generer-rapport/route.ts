@@ -79,7 +79,7 @@ IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks
   }
 }
 
-Remplace toutes les valeurs par celles issues de tes observations terrain. Sois précis, actionnable, orienté expérience visiteur réelle.`
+Remplace toutes les valeurs par celles issues de tes observations terrain. IMPORTANT : score_global et tous les scores doivent être sur 10 maximum (ex: 6.5, 7, 8.2). Sois précis, actionnable, orienté expérience visiteur réelle.`
 }
 
 export async function POST(req: NextRequest) {
