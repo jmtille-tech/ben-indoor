@@ -332,11 +332,25 @@ export default function Terrain() {
       const scoreOn10 = (scoresCalcules[p.nom] / 10).toFixed(1)
       notesAvecScores[p.nom] = `Score calculé: ${scoreOn10}/10\n${lignes}${note ? '\nObservations: ' + note : ''}`
     }
+
+    // Créer la mission côté client si aucune sélectionnée
+    let finalMissionId = selectedMissionId
+    if (!finalMissionId && selectedClientId) {
+      const missionType = \`\${typeMission || 'neuroaccess'}-\${typeDiagnostic || 'cognitif'}\`
+      const { data: newMission } = await supabase.from('missions').insert({
+        client_id: selectedClientId,
+        type: missionType,
+        date_mission: new Date().toISOString().split('T')[0],
+        statut: 'publie'
+      }).select().single()
+      if (newMission) finalMissionId = newMission.id
+    }
+
     try {
       const res = await fetch('/api/generer-rapport', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: notesAvecScores, scores_calcules: scoresCalcules, client_nom: selectedClient?.nom || 'Diagnostic terrain', client_id: selectedClientId || null, mission_id: selectedMissionId || null, type_mission: typeMission, type_diagnostic: typeDiagnostic })
+        body: JSON.stringify({ notes: notesAvecScores, scores_calcules: scoresCalcules, client_nom: selectedClient?.nom || 'Diagnostic terrain', client_id: selectedClientId || null, mission_id: finalMissionId || null, type_mission: typeMission, type_diagnostic: typeDiagnostic })
       })
       const data = await res.json()
       if (data.success) { setRapport(data.rapport); setEtape('fin') }
