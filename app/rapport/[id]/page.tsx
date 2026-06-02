@@ -38,11 +38,29 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
   }
 
   function handleMail() {
-    const sujet = encodeURIComponent(`Rapport diagnostic Ben Indoor — ${mission?.clients?.nom}`)
+    const sujet = encodeURIComponent(`Rapport diagnostic Neuroplay — ${mission?.clients?.nom}`)
     const token = rapport?.share_token
     const lien = token ? `${window.location.origin}/rapport/${id}?token=${token}` : window.location.href
-    const corps = encodeURIComponent(`Bonjour,\n\nVoici le rapport de diagnostic Ben Indoor pour ${mission?.clients?.nom}.\n\nScore global : ${rapport?.executive_summary?.score_global}/10\n\nConsultez le rapport : ${lien}\n\nCordialement,\nNeuroplay Xpériences`)
+    const corps = encodeURIComponent(`Bonjour,\n\nVoici le rapport de diagnostic Neuroplay Xpériences pour ${mission?.clients?.nom}.\n\nScore global : ${rapport?.executive_summary?.score_global}/10\n\nConsultez le rapport : ${lien}\n\nCordialement,\nNeuroplay Xpériences`)
     window.location.href = `mailto:?subject=${sujet}&body=${corps}`
+  }
+
+  // Titre du rapport selon le type de mission
+  function rapportTitre(): string {
+    const type = mission?.type || ''
+    if (type.includes('neuroaccess')) return 'Rapport Neuroaccess — Parcours visiteur'
+    if (type.includes('neurotaste')) return 'Rapport Neurotaste — Expérience F&B'
+    if (type.includes('neuromedia')) return 'Rapport Neuromedia — Captation & Médias'
+    return 'Rapport Diagnostic — Neuroplay Xpériences'
+  }
+
+  // Titre du score selon le type de mission
+  function scoreTitre(): string {
+    const type = mission?.type || ''
+    if (type.includes('neuroaccess')) return 'Score Neuroaccess'
+    if (type.includes('neurotaste')) return 'Score Neurotaste'
+    if (type.includes('neuromedia')) return 'Score Neuromedia'
+    return 'Score Neuroplay'
   }
 
   const scoreColor = (s: number) => s >= 7 ? '#16a34a' : s >= 5 ? '#d97706' : '#dc2626'
@@ -88,8 +106,8 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           {!modeToken && <button onClick={handleRetour} style={{ background: 'transparent', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#64748b', padding: '6px 14px', fontSize: '13px', cursor: 'pointer' }}>← Retour</button>}
           <div>
-            <p style={{ color: '#0f172a', fontSize: '14px', fontWeight: '700', margin: 0, fontFamily: 'Arial' }}>Ben Indoor · Rapport diagnostic</p>
-            <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0, fontFamily: 'Arial' }}>{mission?.clients?.nom} · {mission?.type} · {mission?.date_mission}</p>
+            <p style={{ color: '#0f172a', fontSize: '14px', fontWeight: '700', margin: 0, fontFamily: 'Arial' }}>Neuroplay Xpériences · {rapportTitre()}</p>
+            <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0, fontFamily: 'Arial' }}>{mission?.clients?.nom} · {mission?.date_mission}</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -106,8 +124,13 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: '#c8f135' }} />
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '40px' }}>
               <div>
-                <div style={{ fontSize: '32px', marginBottom: '16px' }}>🏟️</div>
-                <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: '700', margin: '0 0 8px', lineHeight: 1.2 }}>Diagnostic Expérience Visiteur Indoor</h1>
+                <div style={{ marginBottom: '16px' }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="10" r="3" stroke="#c8f135" strokeWidth="1.5"/>
+                    <path d="M12 3C8.13 3 5 6.13 5 10c0 5.25 7 11 7 11s7-5.75 7-11c0-3.87-3.13-7-7-7z" stroke="#c8f135" strokeWidth="1.5" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: '700', margin: '0 0 8px', lineHeight: 1.2 }}>{rapportTitre()}</h1>
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', margin: '0 0 4px' }}>{mission?.clients?.nom}</p>
                 {ex.type_site && <p style={{ color: '#c8f135', fontSize: '13px', margin: 0 }}>{ex.type_site}</p>}
               </div>
@@ -136,7 +159,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
             <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>Executive Summary</h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div>
-                <p style={{ fontSize: '11px', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700', margin: '0 0 12px' }}>3 Frictions comportementales</p>
+                <p style={{ fontSize: '11px', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700', margin: '0 0 12px' }}>Frictions comportementales</p>
                 {(ex.frictions || []).map((f: string, i: number) => (
                   <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'flex-start' }}>
                     <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#fee2e2', color: '#dc2626', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</div>
@@ -145,7 +168,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
                 ))}
               </div>
               <div>
-                <p style={{ fontSize: '11px', color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700', margin: '0 0 12px' }}>3 Opportunités immédiates</p>
+                <p style={{ fontSize: '11px', color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700', margin: '0 0 12px' }}>Opportunités immédiates</p>
                 {(ex.opportunites || []).map((o: string, i: number) => (
                   <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'flex-start' }}>
                     <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#dcfce7', color: '#16a34a', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</div>
@@ -201,7 +224,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
 
           {/* Analyse cognitive */}
           <div style={{ background: '#fff', borderRadius: '12px', padding: '32px', marginBottom: '24px', border: '1px solid #e2e8f0' }}>
-            <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>Analyse cognitive</h2>
+            <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>Analyse cognitive — BEN™</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
               {[
                 { label: 'Surcharge mentale', data: cog.surcharge || [], color: '#dc2626', bg: '#fee2e2', icon: '🧠' },
@@ -219,27 +242,27 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
           {/* Micro-entretiens */}
           {(entretiensSynthese.satisfactions?.length > 0 || entretiensSynthese.frustrations?.length > 0) && (
             <div style={{ background: '#fff', borderRadius: '12px', padding: '32px', marginBottom: '24px', border: '1px solid #e2e8f0' }}>
-              <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>💬 Synthèse des micro-entretiens visiteurs</h2>
+              <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>Synthèse micro-entretiens visiteurs</h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                 <div style={{ background: '#dcfce7', borderRadius: '10px', padding: '16px' }}>
-                  <p style={{ fontSize: '11px', color: '#16a34a', textTransform: 'uppercase', fontWeight: '700', margin: '0 0 12px' }}>✅ Satisfactions</p>
+                  <p style={{ fontSize: '11px', color: '#16a34a', textTransform: 'uppercase', fontWeight: '700', margin: '0 0 12px' }}>Satisfactions</p>
                   {(entretiensSynthese.satisfactions || []).map((s: string, i: number) => <p key={i} style={{ fontSize: '12px', color: '#374151', margin: '0 0 8px', lineHeight: 1.5, paddingLeft: '8px', borderLeft: '2px solid #16a34a' }}>{s}</p>)}
                 </div>
                 <div style={{ background: '#fee2e2', borderRadius: '10px', padding: '16px' }}>
-                  <p style={{ fontSize: '11px', color: '#dc2626', textTransform: 'uppercase', fontWeight: '700', margin: '0 0 12px' }}>⚠️ Frustrations</p>
+                  <p style={{ fontSize: '11px', color: '#dc2626', textTransform: 'uppercase', fontWeight: '700', margin: '0 0 12px' }}>Frustrations</p>
                   {(entretiensSynthese.frustrations || []).map((f: string, i: number) => <p key={i} style={{ fontSize: '12px', color: '#374151', margin: '0 0 8px', lineHeight: 1.5, paddingLeft: '8px', borderLeft: '2px solid #dc2626' }}>{f}</p>)}
                 </div>
               </div>
               {entretiensSynthese.memorabilite && (
                 <div style={{ background: '#fef3c7', borderRadius: '10px', padding: '16px' }}>
-                  <p style={{ fontSize: '11px', color: '#d97706', textTransform: 'uppercase', fontWeight: '700', margin: '0 0 8px' }}>⭐ Ce que les visiteurs retiennent</p>
+                  <p style={{ fontSize: '11px', color: '#d97706', textTransform: 'uppercase', fontWeight: '700', margin: '0 0 8px' }}>Ce que les visiteurs retiennent</p>
                   <p style={{ fontSize: '13px', color: '#374151', margin: 0, lineHeight: 1.6 }}>{entretiensSynthese.memorabilite}</p>
                 </div>
               )}
             </div>
           )}
 
-          {/* Synthèse stratégique */}
+          {/* Plan d'action */}
           <div style={{ background: '#fff', borderRadius: '12px', padding: '32px', marginBottom: '24px', border: '1px solid #e2e8f0' }}>
             <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>Plan d'action</h2>
             {syn.map((r: any, i: number) => (
@@ -253,10 +276,10 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
             ))}
           </div>
 
-          {/* Score Indoor */}
+          {/* Score */}
           <div style={{ background: '#fff', borderRadius: '12px', padding: '32px', marginBottom: '32px', border: '1px solid #e2e8f0' }}>
-            <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>Score Indoor Neuroplay</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginBottom: '24px' }}>
+            <h2 style={{ color: '#0f172a', fontSize: '16px', fontWeight: '700', margin: '0 0 24px', paddingBottom: '12px', borderBottom: '2px solid #f1f5f9' }}>{scoreTitre()}</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '24px' }}>
               {Object.entries(sn).map(([key, val]: any) => (
                 <div key={key} style={{ textAlign: 'center', background: '#f8fafc', borderRadius: '10px', padding: '16px', border: '1px solid #e2e8f0' }}>
                   <p style={{ fontSize: '10px', color: '#64748b', margin: '0 0 12px', textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</p>
@@ -270,9 +293,9 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
             <div style={{ background: '#0f172a', borderRadius: '12px', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: '#c8f135' }} />
               <div>
-                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: '0 0 4px' }}>Score global Indoor</p>
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: '0 0 4px' }}>{scoreTitre()}</p>
                 <p style={{ fontSize: '48px', fontWeight: '700', color: '#c8f135', margin: 0, lineHeight: 1 }}>{scoreGlobal}</p>
-                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', margin: '4px 0 0' }}>/ 10 · Ben Indoor — Neuroplay Xpériences</p>
+                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', margin: '4px 0 0' }}>/ 10 · BEN™ — Neuroplay Xpériences</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', margin: '0 0 4px' }}>Client</p>
