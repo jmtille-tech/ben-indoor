@@ -33,12 +33,21 @@ export default function Dashboard() {
 
   const statusColor: any = { publie: '#c8f135', brouillon: 'rgba(255,255,255,0.3)', 'en cours': '#EF9F27' }
 
+  // Label lisible pour le type de mission
+  function missionLabel(type: string): string {
+    if (!type) return '—'
+    if (type.includes('neuroaccess')) return 'Neuroaccess'
+    if (type.includes('neurotaste')) return 'Neurotaste'
+    if (type.includes('neuromedia')) return 'Neuromedia'
+    return type
+  }
+
   return (
     <main style={{ minHeight: '100vh', background: '#0d1520', fontFamily: 'Arial, sans-serif', padding: '32px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
         <div>
-          <h1 style={{ color: '#c8f135', fontSize: '22px', margin: '0 0 4px' }}>Ben Indoor · Dashboard</h1>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px', margin: 0 }}>Diagnostic expérience visiteur — Loisirs indoor</p>
+          <h1 style={{ color: '#c8f135', fontSize: '22px', margin: '0 0 4px' }}>BEN · Dashboard</h1>
+          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px', margin: 0 }}>Neuroplay Xpériences — Diagnostic expérience visiteur</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>{user?.email}</span>
@@ -60,13 +69,18 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Bouton Ben Indoor */}
+      {/* Bouton démarrer diagnostic */}
       <div style={{ marginBottom: '24px' }}>
         <button onClick={() => window.location.href = '/terrain'} style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(200,241,53,0.06)', border: '1px solid rgba(200,241,53,0.25)', borderRadius: '14px', padding: '18px 24px', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,241,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>🏟️</div>
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,241,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="10" r="3" stroke="#c8f135" strokeWidth="1.5"/>
+              <path d="M12 3C8.13 3 5 6.13 5 10c0 5.25 7 11 7 11s7-5.75 7-11c0-3.87-3.13-7-7-7z" stroke="#c8f135" strokeWidth="1.5" strokeLinejoin="round"/>
+            </svg>
+          </div>
           <div>
-            <p style={{ color: '#c8f135', fontSize: '15px', fontWeight: '700', margin: '0 0 3px' }}>Démarrer un diagnostic indoor</p>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: 0 }}>Ben te guide poste par poste — sans équipement neuro →</p>
+            <p style={{ color: '#c8f135', fontSize: '15px', fontWeight: '700', margin: '0 0 3px' }}>Démarrer un diagnostic</p>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: 0 }}>BEN te guide poste par poste — Cognitif ou Connecté →</p>
           </div>
           <div style={{ marginLeft: 'auto', color: '#c8f135', fontSize: '20px' }}>→</div>
         </button>
@@ -84,7 +98,7 @@ export default function Dashboard() {
               <p style={{ color: '#fff', fontSize: '14px', fontWeight: '500', margin: '0 0 4px' }}>{c.nom}</p>
               <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px', margin: 0 }}>{c.secteur_cible || '—'}</p>
             </div>
-            <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '20px', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}>{c.plan || 'indoor'}</span>
+            <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '20px', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}>{c.plan || 'Neuroplay'}</span>
           </div>
         ))}
       </div>
@@ -100,7 +114,7 @@ export default function Dashboard() {
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(200,241,53,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c8f135', fontSize: '13px', fontWeight: '700', flexShrink: 0 }}>{m.clients?.nom?.charAt(0)}</div>
             <div style={{ flex: 1 }}>
               <p style={{ color: '#fff', fontSize: '14px', fontWeight: '500', margin: '0 0 2px' }}>{m.clients?.nom}</p>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>{m.type} · {m.date_mission}</p>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>{missionLabel(m.type)} · {m.date_mission}</p>
             </div>
             <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '20px', border: `1px solid ${statusColor[m.statut]}`, color: statusColor[m.statut] }}>{m.statut}</span>
           </div>
