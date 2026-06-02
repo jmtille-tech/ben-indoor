@@ -578,7 +578,7 @@ export default function Terrain() {
       </div>
       {rapport && (
         <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', padding: '20px', ...S.card, marginBottom: '12px' }}>
+          <div style={{ ...S.card, textAlign: 'center', marginBottom: '12px' }}>
             <p style={{ fontSize: '48px', fontWeight: '700', color: '#c8f135', margin: '0 0 4px', lineHeight: 1 }}>{rapport.executive_summary?.score_global}</p>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Score global / 10</p>
           </div>
