@@ -136,7 +136,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Date</p>
-                <p style={{ color: '#fff', fontSize: '14px', fontWeight: '600', margin: '0 0 20px' }}>{mission?.date_mission}</p>
+                <p style={{ color: '#fff', fontSize: '14px', fontWeight: '600', margin: '0 0 20px' }}>{dateDoc}</p>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(200,241,53,0.12)', border: '1px solid rgba(200,241,53,0.35)', borderRadius: '20px', padding: '5px 14px' }}>
                   <span style={{ color: '#c8f135', fontSize: '10px', fontWeight: '700', letterSpacing: '0.15em', textTransform: 'uppercase' }}>🔒 Document confidentiel</span>
                 </div>
