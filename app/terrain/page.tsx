@@ -632,7 +632,7 @@ export default function Terrain() {
         </div>
         <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{posteIndex + 1}/{total}</span>
         <button onClick={() => { if (window.confirm('Quitter ? Tes notes seront perdues.')) window.location.href = '/dashboard' }}
-          style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '20px', cursor: 'pointer', padding: '4px 8px' }}>&#x2715;</button>
+          style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '20px', cursor: 'pointer', padding: '4px 8px' }}>✕</button>
       </div>
       <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)' }}>
         <div style={{ height: '3px', width: `${progression}%`, background: '#c8f135', transition: 'width 0.3s' }} />
@@ -660,7 +660,7 @@ export default function Terrain() {
                     return (
                       <button key={val} onClick={() => setReponse(i, val)}
                         style={{ flex: 1, padding: '8px', borderRadius: '8px', border: `1px solid ${c.border}`, background: c.bg, color: c.text, fontSize: '13px', fontWeight: '600', cursor: 'pointer', textTransform: 'capitalize', transition: 'all 0.15s' }}>
-                        {val === 'oui' ? '&#x2713; Oui' : val === 'partiel' ? '~ Partiel' : '&#x2717; Non'}
+                        {val === 'oui' ? '✓ Oui' : val === 'partiel' ? '~ Partiel' : '✗ Non'}
                       </button>
                     )
                   })}
@@ -707,7 +707,7 @@ export default function Terrain() {
               {mediasPosteActuel.map(m => (
                 <div key={m.id} style={{ width: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${m.type === 'drone' ? 'rgba(139,92,246,0.4)' : 'rgba(55,138,221,0.3)'}` }}>
                   {m.type === 'audio'
-                    ? <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,149,0,0.1)', fontSize: '24px' }}>&#x1F399;</div>
+                    ? <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,149,0,0.1)', fontSize: '24px' }}>🎙</div>
                     : <img src={m.url} alt={m.nom} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   }
                 </div>
@@ -725,7 +725,7 @@ export default function Terrain() {
             <button onClick={precedent} style={{ flex: 1, ...S.btnGhost }}>&#x2190; Précédent</button>
           )}
           <button onClick={sauvegarderEtContinuer} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
-            {posteIndex < total - 1 ? 'Suivant &#x2192;' : 'Générer le rapport &#x2713;'}
+            {posteIndex < total - 1 ? 'Suivant →' : 'Générer le rapport ✓'}
           </button>
         </div>
       </div>
