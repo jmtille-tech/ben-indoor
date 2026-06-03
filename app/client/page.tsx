@@ -7,7 +7,38 @@ export default function ClientPage() {
   const [missions, setMissions] = useState<any[]>([])
   const [medias, setMedias] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [onglet, setOnglet] = useState<'rapports' | 'medias'>('rapports')
+  const [onglet, setOnglet] = useState<'rapports' | 'medias' | 'decouvrir'>('rapports')
+
+  // Toutes les offres disponibles
+  const toutesLesOffres = [
+    {
+      id: 'neuroaccess',
+      nom: 'Neuroaccess',
+      icon: '🗺️',
+      tagline: 'Parcours visiteur complet',
+      description: 'Analyse neuro-comportementale de l\'intégralité du parcours visiteur — avant, pendant et après la visite. Identifie les frictions et les opportunités d\'engagement.',
+      points: ['11 postes d\'observation', 'Score Neuroaccess / 10', 'Plan d\'action priorisé', 'Rapport IA complet'],
+      color: '#c8f135',
+    },
+    {
+      id: 'neurotaste',
+      nom: 'Neurotaste',
+      icon: '🍽️',
+      tagline: 'Expérience F&B',
+      description: 'Diagnostic spécialisé sur l\'expérience food & beverage. Analyse la perception sensorielle, la lisibilité de l\'offre et les leviers d\'achat impulsif.',
+      points: ['Protocole sensoriel terrain', 'Score Neurotaste / 10', 'Audit offre & prix', 'Recommandations F&B'],
+      color: '#EF9F27',
+    },
+    {
+      id: 'neuromedia',
+      nom: 'Neuromedia',
+      icon: '🎬',
+      tagline: 'Captation & médias',
+      description: 'Production de contenu immersif terrain — photos, vidéos drone, interviews visiteurs. Valorise ton expérience sur les réseaux et supports de communication.',
+      points: ['Captation drone & terrain', 'Interviews visiteurs', 'Montage livrable', 'Contenu réseaux sociaux'],
+      color: '#7C83FD',
+    },
+  ]
 
   useEffect(() => {
     async function load() {
@@ -16,7 +47,7 @@ export default function ClientPage() {
       const { data: profile } = await supabase.from('user_profiles').select('role, client_id').eq('id', user.id).single()
       if (profile?.role === 'admin') { window.location.href = '/dashboard'; return }
       if (profile?.client_id) {
-        const { data: clientData } = await supabase.from('clients').select('nom, plan, secteur_cible').eq('id', profile.client_id).single()
+        const { data: clientData } = await supabase.from('clients').select('nom, plan, secteur_cible, offres_actives').eq('id', profile.client_id).single()
         if (clientData) setClient(clientData)
         const { data: missionsData } = await supabase.from('missions').select('id, type, date_mission, statut').eq('client_id', profile.client_id).eq('statut', 'publie').order('created_at', { ascending: false })
         if (missionsData) setMissions(missionsData)
@@ -115,10 +146,10 @@ export default function ClientPage() {
 
         {/* Onglets */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-          {(['rapports', 'medias'] as const).map(o => (
+          {(['rapports', 'medias', 'decouvrir'] as const).map(o => (
             <button key={o} onClick={() => setOnglet(o)}
-              style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: onglet === o ? '#c8f135' : 'rgba(255,255,255,0.05)', color: onglet === o ? '#0d1520' : 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}>
-              {o === 'rapports' ? `Rapports (${missions.length})` : `Médias (${medias.length})`}
+              style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: onglet === o ? '#c8f135' : 'rgba(255,255,255,0.05)', color: onglet === o ? '#0d1520' : 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>
+              {o === 'rapports' ? `Rapports (${missions.length})` : o === 'medias' ? `Médias (${medias.length})` : '✦ Découvrir'}
             </button>
           ))}
         </div>
@@ -217,6 +248,83 @@ export default function ClientPage() {
           </div>
         )}
 
+        {/* ── ONGLET DÉCOUVRIR ── */}
+        {onglet === 'decouvrir' && (
+          <div>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '16px', lineHeight: 1.6 }}>
+              Découvrez les autres protocoles Neuroplay pour aller encore plus loin dans l'optimisation de votre expérience visiteur.
+            </p>
+
+            {toutesLesOffres.map(offre => {
+              const active = client?.offres_actives?.includes(offre.id)
+              return (
+                <div key={offre.id} style={{ background: '#1a2540', borderRadius: '16px', border: `1px solid ${active ? offre.color + '40' : 'rgba(255,255,255,0.06)'}`, marginBottom: '16px', overflow: 'hidden', position: 'relative' }}>
+
+                  {/* Badge actif / disponible */}
+                  <div style={{ position: 'absolute', top: '14px', right: '14px', background: active ? offre.color + '20' : 'rgba(255,255,255,0.06)', border: `1px solid ${active ? offre.color + '60' : 'rgba(255,255,255,0.12)'}`, borderRadius: '20px', padding: '3px 10px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: '700', color: active ? offre.color : 'rgba(255,255,255,0.3)', letterSpacing: '0.06em' }}>{active ? '✓ ACTIF' : 'DISPONIBLE'}</span>
+                  </div>
+
+                  <div style={{ padding: '20px' }}>
+                    {/* Header offre */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+                      <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: offre.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
+                        {offre.icon}
+                      </div>
+                      <div>
+                        <p style={{ color: offre.color, fontSize: '16px', fontWeight: '700', margin: '0 0 2px' }}>{offre.nom}</p>
+                        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>{offre.tagline}</p>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: '0 0 14px', lineHeight: 1.6 }}>{offre.description}</p>
+
+                    {/* Points clés */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: active ? '0' : '16px' }}>
+                      {offre.points.map((p, i) => (
+                        <span key={i} style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '20px', background: offre.color + '10', border: `1px solid ${offre.color}30`, color: 'rgba(255,255,255,0.6)' }}>
+                          {active ? '✓' : '·'} {p}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Aperçu démo verrouillé si non actif */}
+                    {!active && (
+                      <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
+                        {/* Faux rapport flouté */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '16px', filter: 'blur(3px)', userSelect: 'none' }}>
+                          <div style={{ height: '8px', background: 'rgba(255,255,255,0.08)', borderRadius: '4px', marginBottom: '8px', width: '60%' }} />
+                          <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', marginBottom: '6px', width: '90%' }} />
+                          <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', marginBottom: '12px', width: '75%' }} />
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            {[40, 65, 55, 80, 45].map((h, i) => (
+                              <div key={i} style={{ flex: 1, height: `${h}px`, background: offre.color + '30', borderRadius: '4px 4px 0 0' }} />
+                            ))}
+                          </div>
+                        </div>
+                        {/* Overlay cadenas */}
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(13,21,32,0.7)', borderRadius: '12px' }}>
+                          <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔒</div>
+                          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', margin: 0, textAlign: 'center' }}>Aperçu disponible sur demande</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* CTA si non actif */}
+                    {!active && (
+                      <button
+                        onClick={() => window.location.href = `mailto:contact@neuroplayxperiences.com?subject=Demande de démo ${offre.nom} — ${client?.nom}&body=Bonjour,%0A%0AJe souhaite en savoir plus sur le protocole ${offre.nom} pour ${client?.nom}.%0A%0ACordialement`}
+                        style={{ width: '100%', marginTop: '14px', padding: '12px', borderRadius: '10px', background: offre.color, color: '#0d1520', fontSize: '13px', fontWeight: '700', border: 'none', cursor: 'pointer' }}>
+                        Demander une démo {offre.nom} →
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </main>
   )
