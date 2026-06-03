@@ -153,6 +153,154 @@ function sanitize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').substring(0, 50)
 }
 
+// ── Détection du type de média à partir du fichier ou de l'extension ──
+function detectMediaType(file: File): 'photo' | 'video' | 'audio' | 'doc' {
+  if (file.type.startsWith('image/')) return 'photo'
+  if (file.type.startsWith('video/')) return 'video'
+  if (file.type.startsWith('audio/')) return 'audio'
+  return 'doc'
+}
+
+// ── Icône selon le type de média ──
+function MediaIcon({ type, size = 24 }: { type: string; size?: number }) {
+  const s = size
+  if (type === 'audio') return (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" stroke="rgba(255,149,0,0.8)" strokeWidth="1.5"/>
+      <path d="M9 8v8M12 6v12M15 9v6" stroke="rgba(255,149,0,0.8)" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+  if (type === 'video') return (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+      <rect x="2" y="6" width="14" height="12" rx="2" stroke="rgba(55,138,221,0.9)" strokeWidth="1.5"/>
+      <path d="M16 10l6-3v10l-6-3V10z" stroke="rgba(55,138,221,0.9)" strokeWidth="1.5" strokeLinejoin="round"/>
+    </svg>
+  )
+  if (type === 'drone') return (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3" stroke="rgba(139,92,246,0.9)" strokeWidth="1.5"/>
+      <path d="M5 5l3 3M19 5l-3 3M5 19l3-3M19 19l-3-3" stroke="rgba(139,92,246,0.9)" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="4" cy="4" r="2" stroke="rgba(139,92,246,0.9)" strokeWidth="1.2"/>
+      <circle cx="20" cy="4" r="2" stroke="rgba(139,92,246,0.9)" strokeWidth="1.2"/>
+      <circle cx="4" cy="20" r="2" stroke="rgba(139,92,246,0.9)" strokeWidth="1.2"/>
+      <circle cx="20" cy="20" r="2" stroke="rgba(139,92,246,0.9)" strokeWidth="1.2"/>
+    </svg>
+  )
+  if (type === 'doc') return (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="rgba(52,199,89,0.9)" strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M14 2v6h6M8 13h8M8 17h5" stroke="rgba(52,199,89,0.9)" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+  // photo
+  return (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="5" width="18" height="14" rx="2" stroke="rgba(55,138,221,0.9)" strokeWidth="1.5"/>
+      <circle cx="12" cy="12" r="4" stroke="rgba(55,138,221,0.9)" strokeWidth="1.5"/>
+      <circle cx="17" cy="8" r="1" fill="rgba(55,138,221,0.9)"/>
+    </svg>
+  )
+}
+
+// ── Vignette média — gère photo/vidéo/audio/doc/drone ──
+function MediaThumb({ media, size = 70 }: { media: any; size?: number }) {
+  const borderColor = media.type === 'drone' ? 'rgba(139,92,246,0.4)'
+    : media.type === 'audio' ? 'rgba(255,149,0,0.4)'
+    : media.type === 'doc' ? 'rgba(52,199,89,0.4)'
+    : 'rgba(55,138,221,0.3)'
+
+  const bgColor = media.type === 'drone' ? 'rgba(139,92,246,0.08)'
+    : media.type === 'audio' ? 'rgba(255,149,0,0.08)'
+    : media.type === 'doc' ? 'rgba(52,199,89,0.08)'
+    : 'rgba(55,138,221,0.08)'
+
+  const style: React.CSSProperties = {
+    width: `${size}px`,
+    height: `${size}px`,
+    borderRadius: '8px',
+    overflow: 'hidden',
+    border: `1px solid ${borderColor}`,
+    flexShrink: 0,
+    position: 'relative',
+  }
+
+  if (media.type === 'photo' || media.type === 'drone' && media.url?.match(/\.(jpg|jpeg|png|gif|webp)/i)) {
+    return (
+      <div style={style}>
+        <img src={media.url} alt={media.nom} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {media.type === 'drone' && (
+          <div style={{ position: 'absolute', bottom: '3px', right: '3px', background: 'rgba(0,0,0,0.6)', borderRadius: '4px', padding: '1px 4px' }}>
+            <MediaIcon type="drone" size={10} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  if (media.type === 'video' || (media.type === 'drone' && media.url?.match(/\.(mp4|mov|avi|webm)/i))) {
+    return (
+      <div style={{ ...style, background: '#000' }}>
+        <video src={media.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted playsInline />
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}>
+          <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="#000">
+              <path d="M3 2l6 3-6 3V2z"/>
+            </svg>
+          </div>
+        </div>
+        {media.type === 'drone' && (
+          <div style={{ position: 'absolute', bottom: '3px', right: '3px', background: 'rgba(0,0,0,0.6)', borderRadius: '4px', padding: '1px 4px' }}>
+            <MediaIcon type="drone" size={10} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ ...style, background: bgColor, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+      <MediaIcon type={media.type} size={28} />
+      <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '0 4px', lineHeight: 1.2, wordBreak: 'break-all' }}>
+        {media.nom?.substring(0, 12) || media.type}
+      </span>
+    </div>
+  )
+}
+
+// ── Lecteur média plein écran (lightbox simple) ──
+function MediaLightbox({ media, onClose }: { media: any; onClose: () => void }) {
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: '#fff', fontSize: '18px', cursor: 'pointer' }}>✕</button>
+      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{media.type} · {media.poste}</p>
+      {(media.type === 'photo') && (
+        <img src={media.url} alt={media.nom} onClick={e => e.stopPropagation()} style={{ maxWidth: '100%', maxHeight: '75vh', borderRadius: '12px', objectFit: 'contain' }} />
+      )}
+      {(media.type === 'video' || media.type === 'drone') && (
+        <video src={media.url} controls autoPlay onClick={e => e.stopPropagation()} style={{ maxWidth: '100%', maxHeight: '75vh', borderRadius: '12px' }} />
+      )}
+      {media.type === 'audio' && (
+        <div onClick={e => e.stopPropagation()} style={{ background: 'rgba(255,149,0,0.1)', border: '1px solid rgba(255,149,0,0.3)', borderRadius: '16px', padding: '24px', textAlign: 'center' }}>
+          <MediaIcon type="audio" size={48} />
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: '12px 0' }}>{media.nom}</p>
+          <audio controls src={media.url} style={{ width: '280px' }} />
+        </div>
+      )}
+      {media.type === 'doc' && (
+        <div onClick={e => e.stopPropagation()} style={{ background: 'rgba(52,199,89,0.1)', border: '1px solid rgba(52,199,89,0.3)', borderRadius: '16px', padding: '32px', textAlign: 'center' }}>
+          <MediaIcon type="doc" size={48} />
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: '16px 0 20px' }}>{media.nom}</p>
+          <a href={media.url} target="_blank" rel="noopener noreferrer"
+            style={{ background: 'rgba(52,199,89,0.2)', border: '1px solid rgba(52,199,89,0.4)', borderRadius: '8px', padding: '10px 20px', color: 'rgba(52,199,89,0.9)', fontSize: '13px', fontWeight: '600', textDecoration: 'none' }}>
+            Ouvrir le document ↗
+          </a>
+        </div>
+      )}
+      <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: '11px', marginTop: '16px' }}>Appuyer en dehors pour fermer</p>
+    </div>
+  )
+}
+
 const S = {
   page: { minHeight: '100vh', background: '#0d1520', fontFamily: 'Arial, sans-serif' } as React.CSSProperties,
   center: { minHeight: '100vh', background: '#0d1520', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'Arial, sans-serif' },
@@ -173,7 +321,6 @@ const Avatar = () => (
 )
 
 export default function Terrain() {
-  // ── ÉTAT — démarre sur choix-diagnostic ──
   const [etape, setEtape] = useState<Etape>('choix-diagnostic')
   const [typeDiagnostic, setTypeDiagnostic] = useState<TypeDiagnostic | null>(null)
   const [typeMission, setTypeMission] = useState<TypeMission | null>(null)
@@ -191,6 +338,7 @@ export default function Terrain() {
   const [uploadingPoste, setUploadingPoste] = useState(false)
   const [uploadingDrone, setUploadingDrone] = useState(false)
   const [mediasParPoste, setMediasParPoste] = useState<Record<string, any[]>>({})
+  const [lightboxMedia, setLightboxMedia] = useState<any | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const droneInputRef = useRef<HTMLInputElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -203,6 +351,10 @@ export default function Terrain() {
   const poste = allPostes[posteIndex]
   const progression = Math.round((posteIndex / total) * 100)
   const selectedClient = clients.find(c => c.id === selectedClientId)
+
+  // Tous les médias de la session (toutes postes confondus)
+  const tousLesMedias = Object.values(mediasParPoste).flat()
+  const totalMedias = tousLesMedias.length
 
   useEffect(() => {
     supabase.from('clients').select('id, nom').eq('statut', 'actif').then(({ data }) => {
@@ -221,47 +373,48 @@ export default function Terrain() {
     setReponsesActuelles(prev => ({ ...prev, [questionIndex]: valeur }))
   }
 
-  async function handleUploadPoste(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files
+  // ── Upload générique (photo/vidéo/audio/doc) ──
+  async function uploadFiles(files: FileList, isDrone: boolean) {
     if (!files || !selectedClientId) return
-    setUploadingPoste(true)
+    isDrone ? setUploadingDrone(true) : setUploadingPoste(true)
     const newMedias: any[] = []
+
     for (const file of Array.from(files)) {
       try {
-        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
-        const path = `${selectedClientId}/${Date.now()}_${sanitize(poste.nom)}_${sanitize(file.name.replace(/\.[^.]+$/, ''))}.${ext}`
-        const isVideo = file.type.startsWith('video/')
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'bin'
+        const prefix = isDrone ? 'drone' : 'media'
+        const path = `${selectedClientId}/${Date.now()}_${prefix}_${sanitize(poste.nom)}_${sanitize(file.name.replace(/\.[^.]+$/, ''))}.${ext}`
+        const mediaType = isDrone ? 'drone' : detectMediaType(file)
+
         const { error: uploadError } = await supabase.storage.from('medias').upload(path, file, { cacheControl: '3600', upsert: false })
         if (uploadError) continue
+
         const { data: urlData } = supabase.storage.from('medias').getPublicUrl(path)
-        const { data: mediaData } = await supabase.from('medias').insert({ client_id: selectedClientId, mission_id: selectedMissionId || null, type: isVideo ? 'video' : 'photo', url: urlData.publicUrl, nom: file.name, poste: poste.nom }).select().single()
+        const { data: mediaData } = await supabase.from('medias').insert({
+          client_id: selectedClientId,
+          mission_id: selectedMissionId || null,
+          type: mediaType,
+          url: urlData.publicUrl,
+          nom: file.name,
+          poste: poste.nom
+        }).select().single()
+
         if (mediaData) newMedias.push(mediaData)
       } catch {}
     }
+
     setMediasParPoste(prev => ({ ...prev, [poste.nom]: [...(prev[poste.nom] || []), ...newMedias] }))
-    setUploadingPoste(false)
-    if (fileInputRef.current) fileInputRef.current.value = ''
+    isDrone ? setUploadingDrone(false) : setUploadingPoste(false)
+    if (isDrone) { if (droneInputRef.current) droneInputRef.current.value = '' }
+    else { if (fileInputRef.current) fileInputRef.current.value = '' }
+  }
+
+  async function handleUploadPoste(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) await uploadFiles(e.target.files, false)
   }
 
   async function handleUploadDrone(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files
-    if (!files || !selectedClientId) return
-    setUploadingDrone(true)
-    const newMedias: any[] = []
-    for (const file of Array.from(files)) {
-      try {
-        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
-        const path = `${selectedClientId}/${Date.now()}_drone_${sanitize(poste.nom)}_${sanitize(file.name.replace(/\.[^.]+$/, ''))}.${ext}`
-        const { error: uploadError } = await supabase.storage.from('medias').upload(path, file, { cacheControl: '3600', upsert: false })
-        if (uploadError) continue
-        const { data: urlData } = supabase.storage.from('medias').getPublicUrl(path)
-        const { data: mediaData } = await supabase.from('medias').insert({ client_id: selectedClientId, mission_id: selectedMissionId || null, type: 'drone', url: urlData.publicUrl, nom: file.name, poste: poste.nom }).select().single()
-        if (mediaData) newMedias.push(mediaData)
-      } catch {}
-    }
-    setMediasParPoste(prev => ({ ...prev, [poste.nom]: [...(prev[poste.nom] || []), ...newMedias] }))
-    setUploadingDrone(false)
-    if (droneInputRef.current) droneInputRef.current.value = ''
+    if (e.target.files) await uploadFiles(e.target.files, true)
   }
 
   const toggleEnregistrement = async () => {
@@ -282,7 +435,14 @@ export default function Terrain() {
         const { error: upErr } = await supabase.storage.from('medias').upload(path, file, { upsert: true })
         if (!upErr) {
           const { data: urlData } = supabase.storage.from('medias').getPublicUrl(path)
-          const { data: mediaData } = await supabase.from('medias').insert({ client_id: selectedClientId, mission_id: selectedMissionId || null, poste: poste.nom, type: 'audio', url: urlData.publicUrl, nom: file.name }).select().single()
+          const { data: mediaData } = await supabase.from('medias').insert({
+            client_id: selectedClientId,
+            mission_id: selectedMissionId || null,
+            poste: poste.nom,
+            type: 'audio',
+            url: urlData.publicUrl,
+            nom: file.name
+          }).select().single()
           if (mediaData) setMediasParPoste(prev => ({ ...prev, [poste.nom]: [...(prev[poste.nom] || []), mediaData] }))
         }
         setUploadingAudio(false)
@@ -333,7 +493,6 @@ export default function Terrain() {
       notesAvecScores[p.nom] = `Score calculé: ${scoreOn10}/10\n${lignes}${note ? '\nObservations: ' + note : ''}`
     }
 
-    // Créer la mission côté client si aucune sélectionnée
     let finalMissionId = selectedMissionId
     if (!finalMissionId && selectedClientId) {
       const missionType = (typeMission || 'neuroaccess') + '-' + (typeDiagnostic || 'cognitif')
@@ -350,7 +509,15 @@ export default function Terrain() {
       const res = await fetch('/api/generer-rapport', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: notesAvecScores, scores_calcules: scoresCalcules, client_nom: selectedClient?.nom || 'Diagnostic terrain', client_id: selectedClientId || null, mission_id: finalMissionId || null, type_mission: typeMission, type_diagnostic: typeDiagnostic })
+        body: JSON.stringify({
+          notes: notesAvecScores,
+          scores_calcules: scoresCalcules,
+          client_nom: selectedClient?.nom || 'Diagnostic terrain',
+          client_id: selectedClientId || null,
+          mission_id: finalMissionId || null,
+          type_mission: typeMission,
+          type_diagnostic: typeDiagnostic
+        })
       })
       const data = await res.json()
       if (data.success) { setRapport(data.rapport); setEtape('fin') }
@@ -426,9 +593,7 @@ export default function Terrain() {
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Quelle mission ?</h1>
-      <p style={{ ...S.sub, marginBottom: '28px' }}>
-        Diagnostic Cognitif · choisis ton offre
-      </p>
+      <p style={{ ...S.sub, marginBottom: '28px' }}>Diagnostic Cognitif · choisis ton offre</p>
       <div style={{ width: '100%', maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
         <button onClick={() => { setTypeMission('neuroaccess'); setEtape('selection') }}
           style={{ background: 'rgba(200,241,53,0.05)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer' }}>
@@ -505,7 +670,6 @@ export default function Terrain() {
           <option value="">— Sélectionner un client</option>
           {clients.map(c => <option key={c.id} value={c.id} style={{ background: '#1a2540' }}>{c.nom}</option>)}
         </select>
-
         {selectedClientId && missions.length > 0 && (
           <>
             <p style={S.label}>Mission</p>
@@ -577,10 +741,12 @@ export default function Terrain() {
   )
 
   // ════════════════════════════════════════
-  // ÉTAPE 6 — FIN
+  // ÉTAPE 6 — FIN (avec galerie médias)
   // ════════════════════════════════════════
   if (etape === 'fin') return (
     <main style={{ ...S.page, padding: '24px' }}>
+      {lightboxMedia && <MediaLightbox media={lightboxMedia} onClose={() => setLightboxMedia(null)} />}
+
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '24px' }}>
         <div style={{ width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c8f135', marginBottom: '16px' }}>
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -592,12 +758,16 @@ export default function Terrain() {
           {rapport ? `Ben a analysé le parcours visiteur de ${selectedClient?.nom}` : erreur}
         </p>
       </div>
+
       {rapport && (
         <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+          {/* Score global */}
           <div style={{ ...S.card, textAlign: 'center', marginBottom: '12px' }}>
             <p style={{ fontSize: '48px', fontWeight: '700', color: '#c8f135', margin: '0 0 4px', lineHeight: 1 }}>{rapport.executive_summary?.score_global}</p>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Score global / 10</p>
           </div>
+
+          {/* Frictions / Opportunités */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
             <div style={S.card}>
               <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Frictions</p>
@@ -612,7 +782,9 @@ export default function Terrain() {
               ))}
             </div>
           </div>
-          <div style={{ ...S.card, marginBottom: '20px' }}>
+
+          {/* Score par poste */}
+          <div style={{ ...S.card, marginBottom: '12px' }}>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>Score Neuroaccess</p>
             {Object.entries(rapport.score_neuroaccess || rapport.score_neuroplay || {}).map(([key, val]: any) => (
               <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
@@ -624,6 +796,71 @@ export default function Terrain() {
               </div>
             ))}
           </div>
+
+          {/* ── SECTION MÉDIAS ── */}
+          {totalMedias > 0 && (
+            <div style={{ ...S.card, marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
+                  Médias captés
+                </p>
+                <span style={{ fontSize: '11px', background: 'rgba(55,138,221,0.15)', border: '1px solid rgba(55,138,221,0.3)', borderRadius: '10px', padding: '2px 8px', color: 'rgba(55,138,221,0.9)' }}>
+                  {totalMedias} fichier{totalMedias > 1 ? 's' : ''}
+                </span>
+              </div>
+
+              {/* Récap par type */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                {(['photo', 'video', 'audio', 'drone', 'doc'] as const).map(type => {
+                  const count = tousLesMedias.filter(m => m.type === type).length
+                  if (count === 0) return null
+                  const colors: Record<string, string> = {
+                    photo: 'rgba(55,138,221,0.2)',
+                    video: 'rgba(55,138,221,0.2)',
+                    audio: 'rgba(255,149,0,0.2)',
+                    drone: 'rgba(139,92,246,0.2)',
+                    doc: 'rgba(52,199,89,0.2)',
+                  }
+                  const borders: Record<string, string> = {
+                    photo: 'rgba(55,138,221,0.4)',
+                    video: 'rgba(55,138,221,0.4)',
+                    audio: 'rgba(255,149,0,0.4)',
+                    drone: 'rgba(139,92,246,0.4)',
+                    doc: 'rgba(52,199,89,0.4)',
+                  }
+                  return (
+                    <div key={type} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: colors[type], border: `1px solid ${borders[type]}`, borderRadius: '8px', padding: '4px 8px' }}>
+                      <MediaIcon type={type} size={12} />
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{count} {type}</span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Médias groupés par poste */}
+              {allPostes.filter(p => (mediasParPoste[p.nom] || []).length > 0).map(p => {
+                const medias = mediasParPoste[p.nom] || []
+                return (
+                  <div key={p.nom} style={{ marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>{p.nom}</span>
+                      <div style={{ flex: 1, height: '0.5px', background: 'rgba(255,255,255,0.06)' }} />
+                      <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}>{medias.length}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {medias.map(m => (
+                        <div key={m.id} onClick={() => setLightboxMedia(m)} style={{ cursor: 'pointer' }}>
+                          <MediaThumb media={m} size={70} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Actions */}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={resetAll} style={{ flex: 1, ...S.btnGhost }}>Nouveau diagnostic</button>
             <button onClick={() => window.location.href = '/dashboard'} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>Dashboard →</button>
@@ -638,6 +875,8 @@ export default function Terrain() {
   // ════════════════════════════════════════
   return (
     <main style={S.page}>
+      {lightboxMedia && <MediaLightbox media={lightboxMedia} onClose={() => setLightboxMedia(null)} />}
+
       <div style={{ background: '#111d30', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', border: '1.5px solid #c8f135', flexShrink: 0 }}>
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -650,14 +889,18 @@ export default function Terrain() {
         <button onClick={() => { if (window.confirm('Quitter ? Tes notes seront perdues.')) window.location.href = '/dashboard' }}
           style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '20px', cursor: 'pointer', padding: '4px 8px' }}>✕</button>
       </div>
+
       <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)' }}>
         <div style={{ height: '3px', width: `${progression}%`, background: '#c8f135', transition: 'width 0.3s' }} />
       </div>
+
       <div style={{ padding: '20px' }}>
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Poste {posteIndex + 1}</p>
           <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: '700', margin: 0 }}>{poste.nom}</h2>
         </div>
+
+        {/* Questions */}
         <div style={{ ...S.card, marginBottom: '12px' }}>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 14px' }}>Observer & évaluer</p>
           {poste.questions.map((q, i) => {
@@ -692,50 +935,75 @@ export default function Terrain() {
             </div>
           )}
         </div>
+
+        {/* Question neuro */}
         <div style={{ background: 'rgba(200,241,53,0.05)', borderRadius: '12px', padding: '14px', marginBottom: '12px', border: '0.5px solid rgba(200,241,53,0.15)' }}>
           <p style={{ fontSize: '11px', color: '#c8f135', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Question neuro</p>
           <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', margin: 0, lineHeight: 1.6 }}>{poste.neuro}</p>
         </div>
+
+        {/* Zone médias */}
         <div style={{ background: 'rgba(55,138,221,0.05)', borderRadius: '12px', padding: '14px', marginBottom: '12px', border: '0.5px solid rgba(55,138,221,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: mediasPosteActuel.length > 0 ? '12px' : '0' }}>
             <p style={{ fontSize: '11px', color: 'rgba(55,138,221,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
-              Médias {mediasPosteActuel.length > 0 && <span style={{ marginLeft: '8px', background: 'rgba(55,138,221,0.2)', borderRadius: '10px', padding: '1px 7px', fontSize: '10px' }}>{mediasPosteActuel.length}</span>}
+              Médias {mediasPosteActuel.length > 0 && (
+                <span style={{ marginLeft: '8px', background: 'rgba(55,138,221,0.2)', borderRadius: '10px', padding: '1px 7px', fontSize: '10px' }}>{mediasPosteActuel.length}</span>
+              )}
             </p>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-              <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple onChange={handleUploadPoste} style={{ display: 'none' }} />
-              <input ref={droneInputRef} type="file" accept="image/*,video/*" multiple onChange={handleUploadDrone} style={{ display: 'none' }} />
+              {/* Input fichier — TOUS types */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+                multiple
+                onChange={handleUploadPoste}
+                style={{ display: 'none' }}
+              />
+              {/* Input drone — vidéo + photo */}
+              <input
+                ref={droneInputRef}
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                onChange={handleUploadDrone}
+                style={{ display: 'none' }}
+              />
               <button onClick={() => fileInputRef.current?.click()} disabled={uploadingPoste}
                 style={{ background: 'rgba(55,138,221,0.15)', border: '1px solid rgba(55,138,221,0.3)', borderRadius: '8px', color: 'rgba(55,138,221,0.9)', fontSize: '12px', fontWeight: '600', padding: '5px 10px', cursor: uploadingPoste ? 'wait' : 'pointer', opacity: uploadingPoste ? 0.6 : 1 }}>
-                {uploadingPoste ? 'Upload...' : '+ Photo / Vidéo'}
+                {uploadingPoste ? 'Upload...' : '+ Fichier'}
               </button>
               <button onClick={toggleEnregistrement} disabled={uploadingAudio}
                 style={{ background: enregistrement ? 'rgba(255,59,48,0.2)' : 'rgba(255,149,0,0.15)', border: enregistrement ? '1px solid rgba(255,59,48,0.5)' : '1px solid rgba(255,149,0,0.3)', borderRadius: '8px', color: enregistrement ? 'rgb(255,59,48)' : 'rgba(255,149,0,0.9)', fontSize: '12px', fontWeight: '600', padding: '5px 10px', cursor: 'pointer' }}>
-                {uploadingAudio ? 'Envoi...' : enregistrement ? 'Stop' : 'Vocal'}
+                {uploadingAudio ? 'Envoi...' : enregistrement ? '⏹ Stop' : '🎙 Vocal'}
               </button>
               <button onClick={() => droneInputRef.current?.click()} disabled={uploadingDrone}
                 style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '8px', color: 'rgba(139,92,246,0.9)', fontSize: '12px', fontWeight: '600', padding: '5px 10px', cursor: uploadingDrone ? 'wait' : 'pointer', opacity: uploadingDrone ? 0.6 : 1 }}>
-                {uploadingDrone ? 'Upload...' : 'Drone'}
+                {uploadingDrone ? 'Upload...' : '🚁 Drone'}
               </button>
             </div>
           </div>
+
+          {/* Galerie poste actuel */}
           {mediasPosteActuel.length > 0 && (
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {mediasPosteActuel.map(m => (
-                <div key={m.id} style={{ width: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${m.type === 'drone' ? 'rgba(139,92,246,0.4)' : 'rgba(55,138,221,0.3)'}` }}>
-                  {m.type === 'audio'
-                    ? <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,149,0,0.1)', fontSize: '24px' }}>🎙</div>
-                    : <img src={m.url} alt={m.nom} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  }
+                <div key={m.id} onClick={() => setLightboxMedia(m)} style={{ cursor: 'pointer' }}>
+                  <MediaThumb media={m} size={70} />
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Notes */}
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Observations complémentaires</p>
           <textarea value={noteActuelle} onChange={e => setNoteActuelle(e.target.value)} placeholder="Note tes observations ici..." rows={3}
             style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '14px', resize: 'none', fontFamily: 'Arial', boxSizing: 'border-box', lineHeight: 1.6 }} />
         </div>
+
+        {/* Navigation */}
         <div style={{ display: 'flex', gap: '10px' }}>
           {posteIndex > 0 && (
             <button onClick={precedent} style={{ flex: 1, ...S.btnGhost }}>&#x2190; Précédent</button>
