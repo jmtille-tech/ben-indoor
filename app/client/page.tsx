@@ -131,11 +131,10 @@ export default function ClientPage() {
       <div style={{ padding: '0 20px 40px' }}>
 
         {/* KPIs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '16px' }}>
           {[
             ['Rapports', missions.length.toString()],
             ['Médias', medias.length.toString()],
-            ['Offre', client?.plan || 'Neuroplay'],
           ].map(([label, val]) => (
             <div key={label} style={{ background: '#1a2540', borderRadius: '12px', padding: '14px 10px', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
               <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', margin: '0 0 6px' }}>{label}</p>
@@ -143,6 +142,29 @@ export default function ClientPage() {
             </div>
           ))}
         </div>
+
+        {/* Protocoles actifs */}
+        {client?.offres_actives?.length > 0 && (
+          <div style={{ background: '#1a2540', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', padding: '14px 16px', marginBottom: '20px' }}>
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 10px' }}>Protocoles actifs</p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {(client.offres_actives as string[]).map((offre: string) => {
+                const meta: Record<string, { icon: string; color: string }> = {
+                  neuroaccess: { icon: '🗺️', color: '#c8f135' },
+                  neurotaste:  { icon: '🍽️', color: '#EF9F27' },
+                  neuromedia:  { icon: '🎬', color: '#7C83FD' },
+                }
+                const m = meta[offre] || { icon: '📋', color: '#fff' }
+                return (
+                  <div key={offre} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: m.color + '12', border: `1px solid ${m.color}40`, borderRadius: '20px', padding: '5px 12px' }}>
+                    <span style={{ fontSize: '13px' }}>{m.icon}</span>
+                    <span style={{ fontSize: '12px', fontWeight: '600', color: m.color, textTransform: 'capitalize' }}>{offre}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Onglets */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
