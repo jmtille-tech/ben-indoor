@@ -1,7 +1,6 @@
-
 {
-  "name": "Ben Indoor — Diagnostic Loisirs",
-  "short_name": "Ben Indoor",
+  "name": "BEN — Neuroplay Xpériences",
+  "short_name": "BEN",
   "description": "Plateforme de diagnostic expérience visiteur pour espaces indoor",
   "start_url": "/terrain",
   "display": "standalone",
