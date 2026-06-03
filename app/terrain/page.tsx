@@ -247,6 +247,117 @@ const allPostesNeurotaste = protocoleNeurotaste.flatMap(p =>
   p.postes.map(poste => ({ ...poste, phase: p.phase }))
 )
 
+// ── PROTOCOLE NEUROMEDIA ──
+const protocoleNeuromedia = [
+  {
+    phase: 'Avant la visite',
+    postes: [
+      {
+        nom: 'Présence digitale',
+        questions: [
+          'Le site web donne-t-il envie de visiter ? Les visuels sont-ils immersifs et émotionnels ?',
+          'Les réseaux sociaux reflètent-ils l\'expérience réelle du site ? Le contenu est-il régulier ?',
+          'Y a-t-il des vidéos de présentation (teaser, storytelling, drone) facilement accessibles ?',
+          'Le référencement local et les avis Google sont-ils soignés et mis en avant ?',
+        ],
+        neuro: 'En voyant les contenus en ligne, ressent-on de l\'envie, de la curiosité, de l\'émotion ? Y a-t-il un élément visuel fort qui ancre l\'identité du lieu dans la mémoire ?',
+        media: ['Screenshot site & réseaux', 'Note vocale 1ère impression digitale']
+      },
+      {
+        nom: 'Communication pré-visite',
+        questions: [
+          'Y a-t-il une stratégie de contenu cohérente sur les différents canaux digitaux ?',
+          'Les emails / newsletters pre-visite sont-ils engageants et personnalisés ?',
+          'Y a-t-il des contenus qui créent de l\'anticipation et de l\'excitation avant la venue ?',
+          'Les campagnes publicitaires utilisent-elles des formats vidéo ou immersifs ?',
+        ],
+        neuro: 'Le visiteur arrive-t-il avec des attentes fortes et une représentation mentale positive du lieu ? Y a-t-il un élément de communication qui crée un effet de surprise ou d\'exclusivité ?',
+        media: ['Screenshot campagnes', 'Note vocale analyse communication']
+      },
+    ]
+  },
+  {
+    phase: 'Pendant la visite',
+    postes: [
+      {
+        nom: 'Activation sur site',
+        questions: [
+          'Y a-t-il des QR codes ou dispositifs digitaux qui enrichissent l\'expérience sur site ?',
+          'Les activations digitales sont-elles intuitives et engageantes pour tous les publics ?',
+          'Y a-t-il un parcours augmenté (AR, gamification, interactivité) proposé aux visiteurs ?',
+          'Les dispositifs d\'activation sont-ils bien signalés et accessibles ?',
+        ],
+        neuro: 'Les activations digitales créent-elles de la surprise et de l\'engagement émotionnel ? Y a-t-il un moment "waouh" lié à un dispositif technologique ou interactif ?',
+        media: ['Vidéo activation terrain', 'Photo dispositifs digitaux']
+      },
+      {
+        nom: 'Captation terrain',
+        questions: [
+          'Y a-t-il des spots photo/vidéo identifiés et scénarisés pour encourager le partage sur les réseaux ?',
+          'L\'éclairage, la mise en scène et les décors favorisent-ils la captation de contenus de qualité ?',
+          'Y a-t-il des éléments instagrammables ou viraux intégrés au parcours ?',
+          'Les visiteurs sont-ils incités à partager leur expérience en temps réel ?',
+        ],
+        neuro: 'Quels sont les moments qui déclenchent spontanément le réflexe de sortir son téléphone ? Y a-t-il un élément visuel suffisamment fort pour générer du contenu UGC de qualité ?',
+        media: ['Photo spots photo', 'Vidéo moments de captation', 'Drone vue générale']
+      },
+      {
+        nom: 'Storytelling immersif',
+        questions: [
+          'Y a-t-il une narration cohérente et émotionnelle tout au long du parcours ?',
+          'Les éléments de décor, de signalétique et de mise en scène racontent-ils une histoire ?',
+          'Y a-t-il des moments de surprise, de rupture ou d\'intensité émotionnelle dans le parcours ?',
+          'L\'identité visuelle du site est-elle forte, distinctive et mémorable ?',
+        ],
+        neuro: 'Le visiteur ressent-il une montée en émotion progressive ? Y a-t-il un pic émotionnel clairement identifiable dans le parcours — un moment qui restera gravé en mémoire ?',
+        media: ['Vidéo storytelling parcours', 'Note vocale analyse narrative']
+      },
+    ]
+  },
+  {
+    phase: 'Après la visite',
+    postes: [
+      {
+        nom: 'Continuité digitale',
+        questions: [
+          'Y a-t-il un dispositif de collecte de contacts (email, réseaux) au moment du départ ?',
+          'Un email post-visite est-il envoyé avec du contenu personnalisé et mémorable ?',
+          'Le site encourage-t-il les visiteurs à partager leurs photos et vidéos sur les réseaux ?',
+          'Y a-t-il une stratégie de remarketing ou de suivi post-visite ?',
+        ],
+        neuro: 'Le visiteur repart-il avec l\'envie de partager son expérience ? Y a-t-il un élément déclencheur qui prolonge l\'émotion après la visite et maintient le lien avec le lieu ?',
+        media: ['Screenshot email post-visite', 'Note vocale bilan digital']
+      },
+      {
+        nom: 'Contenus & exploitation',
+        questions: [
+          'Le site exploite-t-il les contenus UGC générés par les visiteurs ?',
+          'Y a-t-il une production régulière de vidéos (IA, drone, interviews visiteurs) valorisant le site ?',
+          'Les contenus produits sont-ils déclinés sur tous les canaux (web, social, email, ads) ?',
+          'Y a-t-il un ROI mesurable des actions de contenu (reach, engagement, conversion) ?',
+        ],
+        neuro: 'Les contenus produits donnent-ils envie à quelqu\'un qui ne connaît pas le site de venir ? Y a-t-il un format ou un contenu qui crée suffisamment d\'émotion pour être spontanément partagé ?',
+        media: ['Screenshot contenus produits', 'Note vocale analyse ROI contenu']
+      },
+      {
+        nom: 'Neuromarketing & impact',
+        questions: [
+          'Y a-t-il des éléments visuels ou sonores qui déclenchent des émotions fortes et identifiables ?',
+          'La palette de couleurs, les typographies et les visuels sont-ils cohérents avec l\'émotion cible ?',
+          'Y a-t-il des mécanismes de rareté, d\'urgence ou d\'exclusivité intégrés dans la communication ?',
+          'Les messages clés sont-ils formulés pour activer des biais cognitifs positifs (appartenance, statut, nostalgie) ?',
+        ],
+        neuro: 'Quels sont les 3 éléments qui créent le plus fort impact émotionnel sur le visiteur ? Comment ces stimuli peuvent-ils être croisés avec les données biométriques EDA/HRV pour cartographier l\'émotion réelle ?',
+        media: ['Note vocale analyse neuromarketing', 'Photo éléments déclencheurs']
+      },
+    ]
+  }
+]
+
+const allPostesNeuromedia = protocoleNeuromedia.flatMap(p =>
+  p.postes.map(poste => ({ ...poste, phase: p.phase }))
+)
+
 type TypeDiagnostic = 'cognitif' | 'connecte'
 type TypeMission = 'neuroaccess' | 'neurotaste' | 'neuromedia'
 type Etape = 'choix-diagnostic' | 'choix-mission' | 'selection' | 'intro' | 'terrain' | 'generation' | 'fin'
@@ -459,7 +570,7 @@ export default function Terrain() {
   const [enregistrement, setEnregistrement] = useState(false)
   const [uploadingAudio, setUploadingAudio] = useState(false)
 
-  const allPostes = typeMission === 'neurotaste' ? allPostesNeurotaste : allPostesNeuroaccess
+  const allPostes = typeMission === 'neurotaste' ? allPostesNeurotaste : typeMission === 'neuromedia' ? allPostesNeuromedia : allPostesNeuroaccess
   const total = allPostes.length
   const poste = allPostes[posteIndex]
   const progression = Math.round((posteIndex / total) * 100)
@@ -749,23 +860,20 @@ export default function Terrain() {
             Diagnostic complet de l'offre de restauration — lisibilité, fluidité, qualité produit et performance.
           </p>
         </button>
-        <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>BIENTÔT</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="10" r="4" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-                <circle cx="12" cy="10" r="1.5" fill="rgba(255,255,255,0.3)"/>
-                <path d="M8 4.5A7 7 0 0 1 19 10M16 15.5A7 7 0 0 1 5 10" stroke="rgba(255,255,255,0.3)" strokeWidth="1.3" strokeLinecap="round"/>
-                <rect x="9" y="18" width="6" height="3" rx="1" stroke="rgba(255,255,255,0.3)" strokeWidth="1.3"/>
-                <path d="M12 14v4" stroke="rgba(255,255,255,0.3)" strokeWidth="1.3" strokeLinecap="round"/>
-              </svg>
+        <button onClick={() => { setTypeMission('neuromedia'); setEtape('selection') }}
+          style={{ background: 'rgba(124,131,253,0.05)', border: '1px solid rgba(124,131,253,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(124,131,253,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+              <img src="/neuromedia.svg" width="36" height="36" alt="Neuromedia" />
             </div>
             <div>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: '700', margin: 0 }}>Neuromedia</p>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', margin: 0 }}>Captation média · Protocole en construction</p>
+              <p style={{ color: '#7C83FD', fontSize: '15px', fontWeight: '700', margin: 0 }}>Neuromedia</p>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>{allPostesNeuromedia.length} postes · Activation & contenus</p>
             </div>
           </div>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
+            Rend l'expérience visible, vivante et mémorable. Activation digitale, storytelling et neuromarketing.
+          </p>
         </button>
       </div>
       <button onClick={() => setEtape('choix-diagnostic')} style={{ ...S.btnGhost, maxWidth: '360px', width: '100%' }}>
@@ -782,7 +890,7 @@ export default function Terrain() {
       <Avatar />
       <h1 style={S.title}>Pour quel client ?</h1>
       <p style={{ ...S.sub, marginBottom: '28px' }}>
-        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'}</strong> · Diagnostic Cognitif
+        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'}</strong> · Diagnostic Cognitif
       </p>
       <div style={{ width: '100%', maxWidth: '360px' }}>
         <p style={S.label}>Client</p>
@@ -820,14 +928,14 @@ export default function Terrain() {
       <Avatar />
       <h1 style={S.title}>Bonjour, je suis Ben</h1>
       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: '0 0 4px', textAlign: 'center' }}>
-        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'}</strong> · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
+        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'}</strong> · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
       </p>
       <p style={S.sub}>
         Je vais te guider poste par poste. On a <strong style={{ color: '#fff' }}>{total} postes</strong> à couvrir. Pour chaque question, réponds par{' '}
         <strong style={{ color: '#c8f135' }}>Oui</strong>, <strong style={{ color: '#EF9F27' }}>Partiel</strong> ou <strong style={{ color: '#E24B4A' }}>Non</strong>.
       </p>
       <div style={{ width: '100%', maxWidth: '360px', marginBottom: '24px' }}>
-        {(typeMission === 'neurotaste' ? protocoleNeurotaste : protocoleNeuroaccess).map(p => (
+        {(typeMission === 'neurotaste' ? protocoleNeurotaste : typeMission === 'neuromedia' ? protocoleNeuromedia : protocoleNeuroaccess).map(p => (
           <div key={p.phase} style={{ marginBottom: '12px' }}>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 6px' }}>{p.phase}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -851,7 +959,7 @@ export default function Terrain() {
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Ben analyse tes observations...</h1>
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>Génération du rapport {typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'} — 20 à 30 secondes</p>
+      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>Génération du rapport {typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'} — 20 à 30 secondes</p>
       <div style={{ display: 'flex', gap: '8px' }}>
         {[0, 1, 2].map(i => (
           <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c8f135', animation: `pulse ${0.8 + i * 0.2}s ease-in-out infinite alternate` }} />
@@ -873,7 +981,7 @@ export default function Terrain() {
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <h1 style={{ color: '#c8f135', fontSize: '20px', fontWeight: '700', margin: '0 0 8px', textAlign: 'center' }}>
-          {rapport ? `Rapport ${typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'} généré !` : 'Diagnostic terminé'}
+          {rapport ? `Rapport ${typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'} généré !` : 'Diagnostic terminé'}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', textAlign: 'center', margin: 0 }}>
           {rapport ? `Ben a analysé le parcours visiteur de ${selectedClient?.nom}` : erreur}
@@ -1003,7 +1111,7 @@ export default function Terrain() {
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div style={{ flex: 1 }}>
-          <p style={{ color: '#c8f135', fontSize: '13px', fontWeight: '700', margin: 0 }}>Ben · {typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'} · {selectedClient?.nom}</p>
+          <p style={{ color: '#c8f135', fontSize: '13px', fontWeight: '700', margin: 0 }}>Ben · {typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'} · {selectedClient?.nom}</p>
           <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', margin: 0 }}>{poste.phase}</p>
         </div>
         <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{posteIndex + 1}/{total}</span>
