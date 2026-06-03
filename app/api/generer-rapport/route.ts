@@ -88,6 +88,81 @@ IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks
 Remplace toutes les valeurs par celles issues de tes observations terrain. Les réponses neuro-comportementales doivent enrichir particulièrement l'analyse_cognitive (surcharge, doute, waouh) et les insights stratégiques. IMPORTANT : score_global et tous les scores doivent être sur 10 maximum (ex: 6.5, 7, 8.2). Sois précis, actionnable, orienté expérience visiteur réelle.`
 }
 
+// ── PROMPT NEUROTASTE ──
+function buildPromptNeurotaste(notesTexte: string, clientNom: string, reponsesNeuroTexte: string): string {
+  return `Tu es BEN™, outil d'analyse IA propriétaire de Neuroplay Xpériences, développé à partir de plus de 20 ans d'expertise terrain en expérience visiteur et restauration sur sites de loisirs.
+
+Tu viens de réaliser un diagnostic Neurotaste pour ${clientNom}. Ce diagnostic analyse l'intégralité de l'expérience de restauration — avant la commande, pendant et après — selon une grille d'observation neuro-comportementale structurée.
+
+Voici tes observations terrain, poste par poste :
+
+${notesTexte}
+${reponsesNeuroTexte ? `
+---
+OBSERVATIONS NEURO-COMPORTEMENTALES (réponses aux questions cognitives terrain) :
+Ces observations qualitatives terrain croisent la perception sensorielle et cognitive du visiteur face à l'offre F&B. Elles alimentent directement l'analyse cognitive et comportementale du rapport.
+
+${reponsesNeuroTexte}
+` : ''}
+Sur la base de ces observations, génère un rapport structuré au format JSON strict.
+IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks. Commence par { et termine par }.
+
+{
+  "executive_summary": {
+    "score_global": 7,
+    "type_site": "type d'établissement et contexte restauration identifié",
+    "frictions": ["friction F&B 1", "friction 2", "friction 3"],
+    "opportunites": ["opportunité immédiate 1", "opportunité 2", "opportunité 3"],
+    "insight": "insight stratégique clé sur l'expérience F&B globale"
+  },
+  "parcours_scores": {
+    "avant": [
+      {"label": "Accessibilité & signalétique F&B", "score": 7},
+      {"label": "Ambiance & scénographie", "score": 6},
+      {"label": "Lisibilité menus & prix", "score": 5}
+    ],
+    "pendant": [
+      {"label": "Qualité & cohérence de l'offre", "score": 7},
+      {"label": "Accueil & relation client", "score": 6},
+      {"label": "Fluidité & temps d'attente", "score": 5}
+    ],
+    "apres": [
+      {"label": "Qualité & présentation produits", "score": 6},
+      {"label": "Performance & fidélisation", "score": 4}
+    ]
+  },
+  "analyse_comportementale": {
+    "zones_chaudes": ["zone ou moment très appréciés 1", "zone 2"],
+    "zones_froides": ["point de friction ou zone sous-exploitée 1", "zone 2"],
+    "comportements_positifs": ["comportement observé positif 1", "comportement 2"],
+    "comportements_friction": ["friction comportementale observée 1", "friction 2"]
+  },
+  "analyse_cognitive": {
+    "surcharge": ["point de surcharge cognitive ou sensorielle 1", "point 2"],
+    "doute": ["moment d'hésitation ou confusion face à l'offre 1", "moment 2"],
+    "waouh": ["moment d'engagement fort ou plaisir sensoriel 1", "moment 2"]
+  },
+  "synthese": [
+    {"type": "critique", "texte": "action critique prioritaire", "poste": "poste concerné", "delai": "immédiat"},
+    {"type": "critique", "texte": "action critique 2", "poste": "poste", "delai": "< 1 mois"},
+    {"type": "quickwin", "texte": "quick win facilement actionnable", "poste": "poste", "delai": "1 semaine"},
+    {"type": "quickwin", "texte": "quick win 2", "poste": "poste", "delai": "2 semaines"},
+    {"type": "optimisation", "texte": "optimisation moyen terme", "poste": "poste", "delai": "1-3 mois"},
+    {"type": "long_terme", "texte": "évolution structurelle de l'offre", "poste": "poste", "delai": "6-12 mois"}
+  ],
+  "score_neuroaccess": {
+    "acces_lisibilite": 7,
+    "ambiance_scenographie": 6,
+    "qualite_offre": 7,
+    "relation_client": 6,
+    "fluidite_service": 5,
+    "performance_fidelisation": 4
+  }
+}
+
+Remplace toutes les valeurs par celles issues de tes observations terrain F&B. Les réponses neuro doivent enrichir l'analyse_cognitive (surcharge sensorielle, hésitations face à l'offre, moments waouh gustatifs). IMPORTANT : tous les scores sur 10 maximum. Sois précis, actionnable, orienté expérience F&B réelle sur site de loisirs.`
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { notes, scores_calcules, reponses_neuro, client_nom, client_id, mission_id, type_mission, type_diagnostic } = await req.json()
@@ -106,8 +181,8 @@ export async function POST(req: NextRequest) {
 
     // Sélectionner le prompt selon le type de mission
     let prompt: string
-    if (type_mission === 'neuroaccess') {
-      prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
+    if (type_mission === 'neurotaste') {
+      prompt = buildPromptNeurotaste(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
     } else {
       prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
     }
