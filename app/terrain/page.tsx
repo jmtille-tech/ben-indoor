@@ -333,6 +333,8 @@ export default function Terrain() {
   const [noteActuelle, setNoteActuelle] = useState('')
   const [reponsesParPoste, setReponsesParPoste] = useState<Record<string, Record<string, string>>>({})
   const [reponsesActuelles, setReponsesActuelles] = useState<Record<string, string>>({})
+  const [reponsesNeuroParPoste, setReponsesNeuroParPoste] = useState<Record<string, string>>({})
+  const [reponseNeuroActuelle, setReponseNeuroActuelle] = useState('')
   const [rapport, setRapport] = useState<any>(null)
   const [erreur, setErreur] = useState('')
   const [uploadingPoste, setUploadingPoste] = useState(false)
@@ -458,15 +460,20 @@ export default function Terrain() {
     if (noteActuelle.trim()) { nouvellesNotes[poste.nom] = noteActuelle; setNotes(nouvellesNotes) }
     const nouvellesReponses = { ...reponsesParPoste, [poste.nom]: reponsesActuelles }
     setReponsesParPoste(nouvellesReponses)
+    const nouvellesReponsesNeuro = { ...reponsesNeuroParPoste }
+    if (reponseNeuroActuelle.trim()) nouvellesReponsesNeuro[poste.nom] = reponseNeuroActuelle
+    setReponsesNeuroParPoste(nouvellesReponsesNeuro)
     setNoteActuelle('')
     setReponsesActuelles({})
+    setReponseNeuroActuelle('')
     if (posteIndex < total - 1) {
       const next = allPostes[posteIndex + 1]
       setReponsesActuelles(nouvellesReponses[next.nom] || {})
       setNoteActuelle(nouvellesNotes[next.nom] || '')
+      setReponseNeuroActuelle(nouvellesReponsesNeuro[next.nom] || '')
       setPosteIndex(posteIndex + 1)
     } else {
-      genererRapport(nouvellesNotes, nouvellesReponses)
+      genererRapport(nouvellesNotes, nouvellesReponses, nouvellesReponsesNeuro)
     }
   }
 
@@ -475,11 +482,12 @@ export default function Terrain() {
       const prev = allPostes[posteIndex - 1]
       setReponsesActuelles(reponsesParPoste[prev.nom] || {})
       setNoteActuelle(notes[prev.nom] || '')
+      setReponseNeuroActuelle(reponsesNeuroParPoste[prev.nom] || '')
       setPosteIndex(posteIndex - 1)
     }
   }
 
-  async function genererRapport(notesFinales: Record<string, string>, reponsesFinales: Record<string, Record<string, string>>) {
+  async function genererRapport(notesFinales: Record<string, string>, reponsesFinales: Record<string, Record<string, string>>, reponsesNeuroFinales: Record<string, string> = {}) {
     setEtape('generation')
     setErreur('')
     const scoresCalcules: Record<string, number> = {}
@@ -512,6 +520,7 @@ export default function Terrain() {
         body: JSON.stringify({
           notes: notesAvecScores,
           scores_calcules: scoresCalcules,
+          reponses_neuro: reponsesNeuroFinales,
           client_nom: selectedClient?.nom || 'Diagnostic terrain',
           client_id: selectedClientId || null,
           mission_id: finalMissionId || null,
@@ -531,6 +540,7 @@ export default function Terrain() {
     setPosteIndex(0); setNotes({}); setNoteActuelle(''); setRapport(null)
     setSelectedClientId(''); setSelectedMissionId(''); setMediasParPoste({})
     setReponsesParPoste({}); setReponsesActuelles({})
+    setReponsesNeuroParPoste({}); setReponseNeuroActuelle('')
   }
 
   const scoreColor = (s: number) => s >= 7 ? '#c8f135' : s >= 5 ? '#EF9F27' : '#E24B4A'
@@ -939,7 +949,14 @@ export default function Terrain() {
         {/* Question neuro */}
         <div style={{ background: 'rgba(200,241,53,0.05)', borderRadius: '12px', padding: '14px', marginBottom: '12px', border: '0.5px solid rgba(200,241,53,0.15)' }}>
           <p style={{ fontSize: '11px', color: '#c8f135', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Question neuro</p>
-          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', margin: 0, lineHeight: 1.6 }}>{poste.neuro}</p>
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', margin: '0 0 12px', lineHeight: 1.6 }}>{poste.neuro}</p>
+          <textarea
+            value={reponseNeuroActuelle}
+            onChange={e => setReponseNeuroActuelle(e.target.value)}
+            placeholder="Ta réponse / observation..."
+            rows={2}
+            style={{ width: '100%', background: 'rgba(200,241,53,0.05)', border: '0.5px solid rgba(200,241,53,0.2)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '13px', resize: 'none', fontFamily: 'Arial', boxSizing: 'border-box', lineHeight: 1.5 }}
+          />
         </div>
 
         {/* Zone médias */}
