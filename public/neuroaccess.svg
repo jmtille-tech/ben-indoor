@@ -1,0 +1,11 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Neuroaccess</title>
+  <rect width="120" height="120" rx="22" fill="#1a2e1a"/>
+  <path fill="none" stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+    d="M60 22 C48 22 40 30 40 40 C40 52 48 58 60 58 C72 58 80 52 80 40 C80 30 72 22 60 22Z"/>
+  <path fill="none" stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+    d="M50 40 C50 34 54 30 60 30 C66 30 70 34 70 40"/>
+  <circle cx="60" cy="40" r="4" fill="#c8f135"/>
+  <path fill="none" stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+    d="M32 72 L48 72 L52 66 L56 76 L60 68 L64 76 L68 66 L72 72 L88 72"/>
+</svg>

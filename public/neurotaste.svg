@@ -1,0 +1,12 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Neurotaste</title>
+  <rect width="120" height="120" rx="22" fill="#1a2e1a"/>
+  <path fill="none" stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+    d="M60 25 C40 25 28 36 28 48 L92 48 C92 36 80 25 60 25Z"/>
+  <line stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" x1="28" y1="52" x2="92" y2="52"/>
+  <line stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" x1="42" y1="52" x2="42" y2="62"/>
+  <line stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" x1="78" y1="52" x2="78" y2="62"/>
+  <line stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" x1="36" y1="62" x2="84" y2="62"/>
+  <path fill="none" stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+    d="M48 20 C50 16 52 14 54 18 C56 22 58 18 60 20"/>
+</svg>

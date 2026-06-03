@@ -1,0 +1,12 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Neuromedia</title>
+  <rect width="120" height="120" rx="22" fill="#1a2e1a"/>
+  <rect fill="none" stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+    x="28" y="38" width="64" height="44" rx="6"/>
+  <circle fill="none" stroke="#c8f135" stroke-width="1.6" cx="60" cy="60" r="14"/>
+  <circle fill="none" stroke="#c8f135" stroke-width="1.6" cx="60" cy="60" r="8"/>
+  <circle cx="60" cy="60" r="3" fill="#c8f135"/>
+  <path fill="none" stroke="#c8f135" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+    d="M76 31 L80 21 L70 34"/>
+  <circle cx="38" cy="46" r="3" fill="#c8f135"/>
+</svg>
