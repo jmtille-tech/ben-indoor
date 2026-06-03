@@ -11,7 +11,7 @@ function generateShareToken(): string {
 }
 
 // ── PROMPT NEUROACCESS ──
-function buildPromptNeuroaccess(notesTexte: string, clientNom: string): string {
+function buildPromptNeuroaccess(notesTexte: string, clientNom: string, reponsesNeuroTexte: string): string {
   return `Tu es BEN™, outil d'analyse IA propriétaire de Neuroplay Xpériences, développé à partir de plus de 20 ans d'expertise terrain en expérience visiteur.
 
 Tu viens de réaliser un diagnostic Neuroaccess pour ${clientNom}. Ce diagnostic analyse l'intégralité du parcours visiteur — avant, pendant et après la visite — selon une grille d'observation neuro-comportementale structurée.
@@ -19,7 +19,13 @@ Tu viens de réaliser un diagnostic Neuroaccess pour ${clientNom}. Ce diagnostic
 Voici tes observations terrain, poste par poste :
 
 ${notesTexte}
+${reponsesNeuroTexte ? `
+---
+OBSERVATIONS NEURO-COMPORTEMENTALES (réponses aux questions cognitives terrain) :
+Ces observations sont des données qualitatives terrain qui croisent la perception cognitive du visiteur. Elles alimentent directement l'analyse cognitive et comportementale du rapport, et serviront de référence pour le croisement futur avec les données biométriques (EDA/HRV) du Diagnostic Connecté.
 
+${reponsesNeuroTexte}
+` : ''}
 Sur la base de ces observations, génère un rapport structuré au format JSON strict.
 IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks. Commence par { et termine par }.
 
@@ -79,25 +85,31 @@ IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks
   }
 }
 
-Remplace toutes les valeurs par celles issues de tes observations terrain. IMPORTANT : score_global et tous les scores doivent être sur 10 maximum (ex: 6.5, 7, 8.2). Sois précis, actionnable, orienté expérience visiteur réelle.`
+Remplace toutes les valeurs par celles issues de tes observations terrain. Les réponses neuro-comportementales doivent enrichir particulièrement l'analyse_cognitive (surcharge, doute, waouh) et les insights stratégiques. IMPORTANT : score_global et tous les scores doivent être sur 10 maximum (ex: 6.5, 7, 8.2). Sois précis, actionnable, orienté expérience visiteur réelle.`
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { notes, scores_calcules, client_nom, client_id, mission_id, type_mission, type_diagnostic } = await req.json()
+    const { notes, scores_calcules, reponses_neuro, client_nom, client_id, mission_id, type_mission, type_diagnostic } = await req.json()
     console.log('BEN API reçu:', { client_nom, client_id, mission_id, type_mission, type_diagnostic })
 
     const notesTexte = Object.entries(notes)
       .map(([poste, note]) => `## ${poste}\n${note}`)
       .join('\n\n')
 
+    // Formater les réponses neuro pour le prompt
+    const reponsesNeuroTexte = reponses_neuro && Object.keys(reponses_neuro).length > 0
+      ? Object.entries(reponses_neuro)
+          .map(([poste, reponse]) => `### ${poste}\n${reponse}`)
+          .join('\n\n')
+      : ''
+
     // Sélectionner le prompt selon le type de mission
     let prompt: string
     if (type_mission === 'neuroaccess') {
-      prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement')
+      prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
     } else {
-      // Fallback générique pour les futures missions
-      prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement')
+      prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
     }
 
     const message = await anthropic.messages.create({
@@ -114,7 +126,6 @@ export async function POST(req: NextRequest) {
     const shareToken = generateShareToken()
     const missionType = `${type_mission || 'neuroaccess'}-${type_diagnostic || 'cognitif'}`
 
-    // Créer automatiquement une mission si aucune n'est sélectionnée
     let finalMissionId = mission_id
     if (!finalMissionId && client_id) {
       const { data: newMission } = await supabase
@@ -141,6 +152,8 @@ export async function POST(req: NextRequest) {
         analyse_comportementale: rapportData.analyse_comportementale,
         synthese: rapportData.synthese,
         score_neuroplay: rapportData.score_neuroaccess,
+        // Stocker les réponses neuro pour croisement futur avec données biométriques
+        reponses_neuro: reponses_neuro || {},
         publie: true,
         share_token: shareToken,
         nom_rapport: `${type_mission || 'neuroaccess'}-${type_diagnostic || 'cognitif'}`,
@@ -161,7 +174,6 @@ export async function POST(req: NextRequest) {
         await supabase.from('rapports').insert(rapportPayload)
       }
 
-      // Mettre à jour le type de la mission
       await supabase.from('missions').update({ type: missionType }).eq('id', finalMissionId)
     }
 
