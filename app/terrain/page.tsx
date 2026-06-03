@@ -136,6 +136,117 @@ const allPostesNeuroaccess = protocoleNeuroaccess.flatMap(p =>
   p.postes.map(poste => ({ ...poste, phase: p.phase }))
 )
 
+// ── PROTOCOLE NEUROTASTE ──
+const protocoleNeurotaste = [
+  {
+    phase: 'Avant la commande',
+    postes: [
+      {
+        nom: 'Séquence d\'entrée',
+        questions: [
+          'Le point F&B est-il visible et accessible depuis les zones de forte fréquentation du site ?',
+          'La signalétique directionnelle vers la restauration est-elle claire et suffisante ?',
+          'L\'entrée du point de vente est-elle propre, accueillante, sans encombrement ?',
+          'La première impression (propreté, odeurs, ambiance sonore) est-elle positive ?',
+        ],
+        neuro: 'En arrivant, le visiteur sait-il immédiatement ce qu\'il va trouver ? Y a-t-il un élément visuel ou olfactif qui donne envie d\'entrer ?',
+        media: ['Photo entrée point F&B', 'Note vocale 1ère impression']
+      },
+      {
+        nom: 'Aspect général & ambiance',
+        questions: [
+          'Le comptoir/espace de vente est-il visible depuis la salle et les zones d\'attente ?',
+          'L\'éclairage est-il adapté (attractif sur les produits, agréable pour les clients) ?',
+          'Le mobilier et la décoration sont-ils cohérents avec l\'identité du site ?',
+          'La propreté générale (sols, tables, comptoirs, équipements) est-elle irréprochable ?',
+        ],
+        neuro: 'L\'ambiance donne-t-elle envie de s\'attarder et de consommer ? Y a-t-il un élément scénographique mémorable ?',
+        media: ['Photo ambiance générale', 'Vidéo panoramique espace']
+      },
+      {
+        nom: 'Signalétique & lisibilité',
+        questions: [
+          'Les menus et prix sont-ils affichés clairement et lisibles depuis la file d\'attente ?',
+          'Les formules et offres spéciales sont-elles mises en avant efficacement ?',
+          'Les visuels des produits sont-ils appétissants et représentatifs de la réalité ?',
+          'Les informations légales (allergènes, labels) sont-elles présentes et lisibles ?',
+        ],
+        neuro: 'Le visiteur peut-il prendre sa décision de commande avant d\'arriver au comptoir ? Y a-t-il une surcharge d\'information ou au contraire un manque ?',
+        media: ['Photo menus & affichages', 'Screenshot offre digitale']
+      },
+    ]
+  },
+  {
+    phase: 'La commande',
+    postes: [
+      {
+        nom: 'L\'offre',
+        questions: [
+          'L\'offre salée couvre-t-elle les différents moments de consommation (snacking, repas complet) ?',
+          'L\'offre sucrée et boissons est-elle adaptée aux attentes des familles et groupes ?',
+          'La cohérence offre/prix est-elle perçue positivement par rapport au contexte du site ?',
+          'Y a-t-il des produits signature ou locaux qui renforcent l\'identité du lieu ?',
+        ],
+        neuro: 'Y a-t-il un produit ou une offre qui crée de la surprise ou de l\'envie ? La gamme donne-t-elle le sentiment d\'un bon rapport qualité/prix ?',
+        media: ['Photo offre complète', 'Note vocale perception prix']
+      },
+      {
+        nom: 'Le personnel',
+        questions: [
+          'Le personnel est-il identifiable (tenue, badge) et souriant à l\'accueil ?',
+          'La prise en charge client est-elle rapide et professionnelle ?',
+          'Le personnel propose-t-il des ventes additionnelles ou complémentaires spontanément ?',
+          'L\'encaissement est-il fluide ? Les moyens de paiement sont-ils adaptés (CB, sans contact) ?',
+        ],
+        neuro: 'Y a-t-il un geste ou une attention du personnel qui surprend positivement ? La relation client crée-t-elle de l\'attachement au lieu ?',
+        media: ['Note vocale interaction staff', 'Vidéo zone caisse']
+      },
+      {
+        nom: 'Fluidité & temps d\'attente',
+        questions: [
+          'Le temps d\'attente pour commander est-il acceptable (< 5 min en période normale) ?',
+          'Le temps de préparation et de service est-il cohérent avec le type d\'offre proposée ?',
+          'Y a-t-il des zones de congestion ou de confusion dans la circulation autour du comptoir ?',
+          'La gestion de la file d\'attente est-elle organisée et clairement indiquée ?',
+        ],
+        neuro: 'L\'attente est-elle perçue comme longue par le visiteur ? Y a-t-il des éléments qui occupent ou distraient pendant l\'attente ?',
+        media: ['Vidéo flux file d\'attente', 'Note vocale temps observé']
+      },
+    ]
+  },
+  {
+    phase: 'Après la commande',
+    postes: [
+      {
+        nom: 'Qualité & présentation produits',
+        questions: [
+          'La présentation des produits est-elle soignée et conforme aux visuels affichés ?',
+          'La qualité gustative perçue est-elle cohérente avec le prix payé ?',
+          'Les portions sont-elles adaptées aux attentes (familles, enfants, adultes) ?',
+          'Y a-t-il un produit ou une recette qui se distingue positivement ?',
+        ],
+        neuro: 'Y a-t-il un moment "waouh" lié au produit lui-même ? La dégustation crée-t-elle un souvenir positif associé au lieu ?',
+        media: ['Photo produits servis', 'Note vocale dégustation']
+      },
+      {
+        nom: 'Performance & fidélisation',
+        questions: [
+          'La dépense par visiteur semble-t-elle optimisée (vente additionnelle, offres combinées) ?',
+          'Y a-t-il un dispositif de collecte d\'avis ou de satisfaction sur place ?',
+          'L\'exploitant dispose-t-il d\'indicateurs de suivi (DPV, taux de transformation, tickets moyens) ?',
+          'Y a-t-il une incitation à revenir ou une offre de fidélisation liée à la restauration ?',
+        ],
+        neuro: 'Le visiteur repart-il avec l\'envie de revenir spécifiquement pour l\'offre F&B ? La restauration renforce-t-elle ou affaiblit-elle l\'image globale du site ?',
+        media: ['Note vocale bilan global', 'Photo dispositifs fidélisation']
+      },
+    ]
+  }
+]
+
+const allPostesNeurotaste = protocoleNeurotaste.flatMap(p =>
+  p.postes.map(poste => ({ ...poste, phase: p.phase }))
+)
+
 type TypeDiagnostic = 'cognitif' | 'connecte'
 type TypeMission = 'neuroaccess' | 'neurotaste' | 'neuromedia'
 type Etape = 'choix-diagnostic' | 'choix-mission' | 'selection' | 'intro' | 'terrain' | 'generation' | 'fin'
@@ -348,7 +459,7 @@ export default function Terrain() {
   const [enregistrement, setEnregistrement] = useState(false)
   const [uploadingAudio, setUploadingAudio] = useState(false)
 
-  const allPostes = allPostesNeuroaccess
+  const allPostes = typeMission === 'neurotaste' ? allPostesNeurotaste : allPostesNeuroaccess
   const total = allPostes.length
   const poste = allPostes[posteIndex]
   const progression = Math.round((posteIndex / total) * 100)
@@ -623,20 +734,20 @@ export default function Terrain() {
             Analyse complète du parcours visiteur — avant, pendant et après la visite.
           </p>
         </button>
-        <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>BIENTÔT</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="7" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-                <path d="M9 7v4c0 1.1.9 2 2 2h.5M10.5 13v4M14 7v2.5a1.5 1.5 0 0 0 3 0V7M15.5 11v6" stroke="rgba(255,255,255,0.3)" strokeWidth="1.4" strokeLinecap="round"/>
-              </svg>
+        <button onClick={() => { setTypeMission('neurotaste'); setEtape('selection') }}
+          style={{ background: 'rgba(239,159,39,0.05)', border: '1px solid rgba(239,159,39,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(239,159,39,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+              <img src="/neurotaste.svg" width="36" height="36" alt="Neurotaste" />
             </div>
             <div>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: '700', margin: 0 }}>Neurotaste</p>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', margin: 0 }}>Expérience F&B · Protocole en construction</p>
+              <p style={{ color: '#EF9F27', fontSize: '15px', fontWeight: '700', margin: 0 }}>Neurotaste</p>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>{allPostesNeurotaste.length} postes · Expérience F&B</p>
             </div>
           </div>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
+            Diagnostic complet de l'offre de restauration — lisibilité, fluidité, qualité produit et performance.
+          </p>
         </button>
         <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
           <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>BIENTÔT</div>
@@ -671,7 +782,7 @@ export default function Terrain() {
       <Avatar />
       <h1 style={S.title}>Pour quel client ?</h1>
       <p style={{ ...S.sub, marginBottom: '28px' }}>
-        Mission <strong style={{ color: '#c8f135' }}>Neuroaccess</strong> · Diagnostic Cognitif
+        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'}</strong> · Diagnostic Cognitif
       </p>
       <div style={{ width: '100%', maxWidth: '360px' }}>
         <p style={S.label}>Client</p>
@@ -709,14 +820,14 @@ export default function Terrain() {
       <Avatar />
       <h1 style={S.title}>Bonjour, je suis Ben</h1>
       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: '0 0 4px', textAlign: 'center' }}>
-        Mission <strong style={{ color: '#c8f135' }}>Neuroaccess</strong> · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
+        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'}</strong> · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
       </p>
       <p style={S.sub}>
         Je vais te guider poste par poste. On a <strong style={{ color: '#fff' }}>{total} postes</strong> à couvrir. Pour chaque question, réponds par{' '}
         <strong style={{ color: '#c8f135' }}>Oui</strong>, <strong style={{ color: '#EF9F27' }}>Partiel</strong> ou <strong style={{ color: '#E24B4A' }}>Non</strong>.
       </p>
       <div style={{ width: '100%', maxWidth: '360px', marginBottom: '24px' }}>
-        {protocoleNeuroaccess.map(p => (
+        {(typeMission === 'neurotaste' ? protocoleNeurotaste : protocoleNeuroaccess).map(p => (
           <div key={p.phase} style={{ marginBottom: '12px' }}>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 6px' }}>{p.phase}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -740,7 +851,7 @@ export default function Terrain() {
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Ben analyse tes observations...</h1>
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>Génération du rapport Neuroaccess — 20 à 30 secondes</p>
+      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>Génération du rapport {typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'} — 20 à 30 secondes</p>
       <div style={{ display: 'flex', gap: '8px' }}>
         {[0, 1, 2].map(i => (
           <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c8f135', animation: `pulse ${0.8 + i * 0.2}s ease-in-out infinite alternate` }} />
@@ -762,7 +873,7 @@ export default function Terrain() {
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <h1 style={{ color: '#c8f135', fontSize: '20px', fontWeight: '700', margin: '0 0 8px', textAlign: 'center' }}>
-          {rapport ? 'Rapport Neuroaccess généré !' : 'Diagnostic terminé'}
+          {rapport ? `Rapport ${typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'} généré !` : 'Diagnostic terminé'}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', textAlign: 'center', margin: 0 }}>
           {rapport ? `Ben a analysé le parcours visiteur de ${selectedClient?.nom}` : erreur}
@@ -892,7 +1003,7 @@ export default function Terrain() {
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div style={{ flex: 1 }}>
-          <p style={{ color: '#c8f135', fontSize: '13px', fontWeight: '700', margin: 0 }}>Ben · Neuroaccess · {selectedClient?.nom}</p>
+          <p style={{ color: '#c8f135', fontSize: '13px', fontWeight: '700', margin: 0 }}>Ben · {typeMission === 'neurotaste' ? 'Neurotaste' : 'Neuroaccess'} · {selectedClient?.nom}</p>
           <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', margin: 0 }}>{poste.phase}</p>
         </div>
         <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{posteIndex + 1}/{total}</span>
