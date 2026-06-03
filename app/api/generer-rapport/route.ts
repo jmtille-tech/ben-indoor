@@ -163,6 +163,81 @@ IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks
 Remplace toutes les valeurs par celles issues de tes observations terrain F&B. Les réponses neuro doivent enrichir l'analyse_cognitive (surcharge sensorielle, hésitations face à l'offre, moments waouh gustatifs). IMPORTANT : tous les scores sur 10 maximum. Sois précis, actionnable, orienté expérience F&B réelle sur site de loisirs.`
 }
 
+// ── PROMPT NEUROMEDIA ──
+function buildPromptNeuromedia(notesTexte: string, clientNom: string, reponsesNeuroTexte: string): string {
+  return `Tu es BEN™, outil d'analyse IA propriétaire de Neuroplay Xpériences, développé à partir de plus de 20 ans d'expertise terrain en expérience visiteur et neuromarketing.
+
+Tu viens de réaliser un diagnostic Neuromedia pour ${clientNom}. Ce diagnostic analyse l'activation digitale, le storytelling, la captation de contenus et l'impact neuromarketing — avant, pendant et après la visite.
+
+Voici tes observations terrain, poste par poste :
+
+${notesTexte}
+${reponsesNeuroTexte ? `
+---
+OBSERVATIONS NEURO-COMPORTEMENTALES & NEUROMARKETING :
+Ces observations qualitatives terrain analysent les stimuli visuels et émotionnels, les déclencheurs de partage et les moments à fort impact cognitif. Elles sont destinées à être croisées avec les données biométriques EDA/HRV du Diagnostic Connecté.
+
+${reponsesNeuroTexte}
+` : ''}
+Sur la base de ces observations, génère un rapport structuré au format JSON strict.
+IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks. Commence par { et termine par }.
+
+{
+  "executive_summary": {
+    "score_global": 7,
+    "type_site": "type d'établissement et contexte média identifié",
+    "frictions": ["friction media/digitale 1", "friction 2", "friction 3"],
+    "opportunites": ["opportunité activation 1", "opportunité 2", "opportunité 3"],
+    "insight": "insight stratégique clé sur l'activation média et le neuromarketing du site"
+  },
+  "parcours_scores": {
+    "avant": [
+      {"label": "Présence digitale & contenus", "score": 7},
+      {"label": "Communication pré-visite", "score": 6}
+    ],
+    "pendant": [
+      {"label": "Activation sur site", "score": 7},
+      {"label": "Captation & instagrammabilité", "score": 6},
+      {"label": "Storytelling immersif", "score": 5}
+    ],
+    "apres": [
+      {"label": "Continuité digitale", "score": 6},
+      {"label": "Production & exploitation contenus", "score": 5},
+      {"label": "Impact neuromarketing", "score": 4}
+    ]
+  },
+  "analyse_comportementale": {
+    "zones_chaudes": ["zone ou moment à fort potentiel de captation 1", "zone 2"],
+    "zones_froides": ["zone sous-exploitée digitalement 1", "zone 2"],
+    "comportements_positifs": ["comportement de partage ou d'engagement observé 1", "comportement 2"],
+    "comportements_friction": ["friction digitale ou manque d'activation 1", "friction 2"]
+  },
+  "analyse_cognitive": {
+    "surcharge": ["surcharge visuelle ou informationnelle observée 1", "point 2"],
+    "doute": ["moment de décrochage attentionnel ou manque d'émotion 1", "moment 2"],
+    "waouh": ["déclencheur émotionnel fort ou moment instagrammable 1", "moment 2"]
+  },
+  "synthese": [
+    {"type": "critique", "texte": "action critique prioritaire activation", "poste": "poste concerné", "delai": "immédiat"},
+    {"type": "critique", "texte": "action critique 2", "poste": "poste", "delai": "< 1 mois"},
+    {"type": "quickwin", "texte": "quick win activation digitale", "poste": "poste", "delai": "1 semaine"},
+    {"type": "quickwin", "texte": "quick win contenu", "poste": "poste", "delai": "2 semaines"},
+    {"type": "optimisation", "texte": "optimisation storytelling moyen terme", "poste": "poste", "delai": "1-3 mois"},
+    {"type": "long_terme", "texte": "stratégie neuromarketing long terme", "poste": "poste", "delai": "6-12 mois"}
+  ],
+  "score_neuroaccess": {
+    "presence_digitale": 7,
+    "activation_site": 6,
+    "captation_partage": 7,
+    "storytelling": 6,
+    "continuite_post_visite": 5,
+    "impact_neuromarketing": 4
+  }
+}
+
+Remplace toutes les valeurs par celles issues de tes observations terrain. L'analyse_cognitive doit refléter les stimuli visuels et émotionnels observés — attention, émotion, mémorabilité, partage. Les observations neuro doivent enrichir les recommandations neuromarketing et identifier les données à croiser avec EDA/HRV. IMPORTANT : tous les scores sur 10 maximum. Sois précis, actionnable, orienté activation et impact émotionnel réel.`
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { notes, scores_calcules, reponses_neuro, client_nom, client_id, mission_id, type_mission, type_diagnostic } = await req.json()
@@ -183,6 +258,8 @@ export async function POST(req: NextRequest) {
     let prompt: string
     if (type_mission === 'neurotaste') {
       prompt = buildPromptNeurotaste(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
+    } else if (type_mission === 'neuromedia') {
+      prompt = buildPromptNeuromedia(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
     } else {
       prompt = buildPromptNeuroaccess(notesTexte, client_nom || 'l\'établissement', reponsesNeuroTexte)
     }
