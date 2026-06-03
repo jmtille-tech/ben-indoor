@@ -149,7 +149,7 @@ export default function ClientPage() {
           {(['rapports', 'medias', 'decouvrir'] as const).map(o => (
             <button key={o} onClick={() => setOnglet(o)}
               style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: onglet === o ? '#c8f135' : 'rgba(255,255,255,0.05)', color: onglet === o ? '#0d1520' : 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>
-              {o === 'rapports' ? `Rapports (${missions.length})` : o === 'medias' ? `Médias (${medias.length})` : '✦ Découvrir'}
+              {o === 'rapports' ? `Rapports (${missions.length})` : o === 'medias' ? `Médias (${medias.length})` : '✦ Nos offres'}
             </button>
           ))}
         </div>
