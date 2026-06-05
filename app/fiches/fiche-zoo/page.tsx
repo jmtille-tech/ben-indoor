@@ -87,13 +87,13 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
   </div>
 
   <div class="title-bar">
-    <div class="title-main">4 enjeux clés · 4 réponses Neuroplay</div>
-    <div class="title-sub">Zoos &amp; Parcs Animaliers — Diagnostic cognitif terrain · BEN™</div>
+    <div class="title-main">Comment transformer l'expérience visiteur en CA mesurable</div>
+    <div class="title-sub">4 leviers de croissance alignés sur les tendances du secteur 2025 · adressés par Neuroplay Xpériences</div>
   </div>
 
   <div class="col-headers">
-    <div class="col-header-left">Enjeu marché</div>
-    <div class="col-header-right">Solution Neuroplay</div>
+    <div class="col-header-left">Les leviers de croissance</div>
+    <div class="col-header-right">Les solutions Neuroplay Xpériences</div>
   </div>
 
   <div class="row">
@@ -105,8 +105,8 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#EAF3DE; color:#3B6D11;">Neuroaccess</div>
-      <div class="cell-title">Cartographie cognitive du parcours animalier</div>
-      <div class="cell-desc">Identifie les zones d'émerveillement, de fatigue et de décrochage sur l'ensemble du parcours — pour concentrer les investissements là où l'impact est maximal</div>
+      <div class="cell-title">Diagnostic cognitif du parcours animalier</div>
+      <div class="cell-desc">Cartographie les zones chaudes/froides, frictions et moments waouh sur l'ensemble du parcours visiteur</div>
       <div class="cell-chiffre" style="color:#639922;">+25% temps de visite là où l'émerveillement est activé*</div>
     </div>
   </div>
@@ -119,9 +119,9 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
       <div class="cell-source">INSEE · Made in FR — Marché parcs zoologiques 2025</div>
     </div>
     <div class="cell">
-      <div class="cell-badge" style="background:#FAEEDA; color:#854F0B;">BEN global</div>
-      <div class="cell-title">Diagnostic expérience toutes saisons</div>
-      <div class="cell-desc">Analyse les ressorts cognitifs et émotionnels qui retiennent les visiteurs hors-saison — base pour construire des offres nocturnes, hivernales ou événementielles engageantes</div>
+      <div class="cell-badge" style="background:#FAEEDA; color:#854F0B;">Neurotaste</div>
+      <div class="cell-title">Diagnostic cognitif de l'expérience F&amp;B</div>
+      <div class="cell-desc">Identifie chaque friction à l'achat : signalétique, ambiance, accueil, présentation produits — pour maximiser la conversion hors saison haute</div>
       <div class="cell-chiffre" style="color:#BA7517;">Certains parcs affichent +25% de fréquentation vs 2019 grâce à l'enrichissement continu de l'expérience visiteur*</div>
     </div>
   </div>
@@ -129,15 +129,15 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
   <div class="row">
     <div class="cell cell-left">
       <div class="num-circle" style="background:#E6F1FB; color:#185FA5;">3</div>
-      <div class="cell-title">Développer le F&amp;B et l'hébergement</div>
-      <div class="cell-desc">Lodges, restauration thématique, séjours immersifs — les parcs leaders y génèrent une part croissante de leur CA. Mais chaque friction à l'achat réduit la conversion.</div>
-      <div class="cell-source">Zoo de Beauval · Zoo de la Flèche · tendance lodges 2025</div>
+      <div class="cell-title">Développer le réseau et dupliquer ce qui fonctionne</div>
+      <div class="cell-desc">Ouvrir un second site ou une nouvelle zone sans diagnostic du site pilote, c'est reproduire les frictions autant que les succès — le risque opérationnel est sous-estimé</div>
+      <div class="cell-source">Tendance expansion territoriale · secteur animalier 2025</div>
     </div>
     <div class="cell">
-      <div class="cell-badge" style="background:#E6F1FB; color:#185FA5;">Neurotaste</div>
-      <div class="cell-title">Diagnostic cognitif F&amp;B et hébergement</div>
-      <div class="cell-desc">Identifie chaque friction à l'achat : signalétique, ambiance, présentation, accueil — pour optimiser la conversion sur les postes à forte marge</div>
-      <div class="cell-chiffre" style="color:#185FA5;">Un parc performant génère en F&B l'équivalent de son prix d'entrée*</div>
+      <div class="cell-badge" style="background:#E6F1FB; color:#185FA5;">BEN global</div>
+      <div class="cell-title">Diagnostic complet — base d'expansion</div>
+      <div class="cell-desc">Documente l'ADN expérience du site pilote pour un déploiement réseau cohérent et maîtrisé</div>
+      <div class="cell-chiffre" style="color:#185FA5;">Réduction du risque opérationnel à l'ouverture de chaque nouveau site</div>
     </div>
   </div>
 
@@ -145,13 +145,13 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     <div class="cell cell-left">
       <div class="num-circle" style="background:#FBEAF0; color:#993556;">4</div>
       <div class="cell-title">Développer une offre BtoB différenciante</div>
-      <div class="cell-desc">Séminaires nature, team building animalier, soirées privées — la clientèle entreprises est prête à payer premium pour une expérience unique. Encore faut-il la co-construire avec les bons outils.</div>
+      <div class="cell-desc">Séminaires nature, team building animalier, soirées privées — la clientèle entreprises est prête à payer premium pour une expérience unique en lien avec le vivant</div>
       <div class="cell-source">Tendance événementiel entreprises · Made in FR 2025</div>
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#FBEAF0; color:#993556;">Expérience Signature</div>
       <div class="cell-title">Co-construction d'une expérience unique</div>
-      <div class="cell-desc">Basée sur les données physiologiques réelles du parc — crée un moment différenciant mémorable ancré dans l'ADN animalier du site</div>
+      <div class="cell-desc">Basée sur les données physiologiques réelles — crée un moment différenciant mémorable ancré dans l'ADN animalier du site pour visiteurs et entreprises</div>
       <div class="cell-chiffre" style="color:#993556;">47% des visiteurs acceptent un prix plus élevé pour une expérience personnalisée*</div>
     </div>
   </div>
