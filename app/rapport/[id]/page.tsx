@@ -63,10 +63,10 @@ function GaugeCircle({ score, label }: { score: number; label: string }) {
 // ── Timeline plan d'action ────────────────────────────────────────────────────
 function Timeline({ items }: { items: any[] }) {
   const phases = [
-    { label: 'Immédiat', color: '#E24B4A', icon: '🚨' },
-    { label: '< 2 semaines', color: '#EF9F27', icon: '⚡' },
-    { label: '1-3 mois', color: '#378ADD', icon: '📋' },
-    { label: '6-12 mois', color: 'rgba(255,255,255,0.4)', icon: '🎯' },
+    { label: 'Immédiat', icon: '①' },
+    { label: '< 2 semaines', icon: '②' },
+    { label: '1-3 mois', icon: '③' },
+    { label: '6-12 mois', icon: '④' },
   ]
 
   const getPhase = (delai: string) => {
@@ -110,6 +110,15 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
   const [rapport, setRapport] = useState<any>(null)
   const [mission, setMission] = useState<any>(null)
   const [onglet, setOnglet] = useState('exec')
+  const [printMode, setPrintMode] = useState(false)
+
+  function handlePrint() {
+    setPrintMode(true)
+    setTimeout(() => {
+      window.print()
+      setTimeout(() => setPrintMode(false), 500)
+    }, 300)
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -227,11 +236,37 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
     ...(parc.apres || []),
   ]
 
-  return (
-    <main style={{ minHeight: '100vh', background: '#0d1520', fontFamily: 'Arial, sans-serif' }}>
+  const showSection = (id: string) => printMode || onglet === id
 
+  return (
+    <main style={{ minHeight: '100vh', background: printMode ? '#fff' : '#0d1520', fontFamily: 'Arial, sans-serif' }}>
+      <style>{`
+        @media print {
+          .no-print { display: none !important; }
+          body { background: white !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color: #000 !important; }
+          @page { margin: 15mm; size: A4; }
+          canvas { display: none !important; }
+          .chart-container { display: none !important; }
+        }
+      `}</style>
+
+      {/* Header print-only */}
+      {printMode && (
+        <div style={{ padding: '20px 24px', borderBottom: '2px solid #eee', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontSize: '11px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 4px' }}>Neuroplay Xpériences — BEN™</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#0d1520', margin: '0 0 4px' }}>Diagnostic Expérience Visiteur</p>
+            <p style={{ fontSize: '13px', color: '#444', margin: 0 }}>Module Neuroaccess — Approche cognitive terrain</p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ fontSize: '16px', fontWeight: '700', color: '#0d1520', margin: '0 0 2px' }}>{mission?.clients?.nom}</p>
+            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>{mission?.date_mission}</p>
+          </div>
+        </div>
+      )}
       {/* Header */}
-      <div style={{ background: '#111d30', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="no-print" style={{ background: '#111d30', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button onClick={handleRetour} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: 'rgba(255,255,255,0.5)', padding: '5px 12px', fontSize: '12px', cursor: 'pointer' }}>← Retour</button>
           <div>
@@ -239,13 +274,13 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
             <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', margin: 0 }}>{mission?.clients?.nom} · {mission?.type} · {mission?.date_mission}</p>
           </div>
         </div>
-        <button style={{ background: 'rgba(200,241,53,0.12)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '8px', color: '#c8f135', fontSize: '12px', padding: '6px 14px', cursor: 'pointer' }}>
+        <button onClick={handlePrint} className="no-print" style={{ background: 'rgba(200,241,53,0.12)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '8px', color: '#c8f135', fontSize: '12px', padding: '6px 14px', cursor: 'pointer' }}>
           Télécharger PDF
         </button>
       </div>
 
       {/* Onglets */}
-      <div style={{ display: 'flex', background: '#111d30', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '0 24px', overflowX: 'auto' }}>
+      {!printMode && <div style={{ display: 'flex', background: '#111d30', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '0 24px', overflowX: 'auto' }}>
         {onglets.map(o => {
           const isConnecte = o.connecte
           const isActive = onglet === o.id
@@ -260,12 +295,12 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
             </div>
           )
         })}
-      </div>
+      </div>}
 
       <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}>
 
         {/* ── EXECUTIVE SUMMARY ── */}
-        {onglet === 'exec' && (
+        {showSection('exec') && (
           <div>
             {/* Score global */}
             <div style={{ textAlign: 'center', padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '20px' }}>
@@ -304,7 +339,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
         )}
 
         {/* ── PARCOURS ── */}
-        {onglet === 'parcours' && (
+        {showSection('parcours') && (
           <div>
             {[
               { label: 'Avant la visite', data: parc.avant || [] },
@@ -328,7 +363,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
         )}
 
         {/* ── COGNITIF ── */}
-        {onglet === 'cognitif' && (
+        {showSection('cognitif') && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
             {[
               { icon: '🧠', label: 'Surcharge mentale', data: cog.surcharge || [] },
@@ -347,7 +382,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
         )}
 
         {/* ── NEUROIMPACT ── */}
-        {onglet === 'neuroimpact' && (
+        {showSection('neuroimpact') && (
           hasNeuroImpact ? (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
@@ -394,7 +429,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
         )}
 
         {/* ── SYNTHESE ── */}
-        {onglet === 'synthese' && (
+        {showSection('synthese') && (
           <div>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>Plan d'action stratégique</p>
 
@@ -415,7 +450,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
         )}
 
         {/* ── SCORE ── */}
-        {onglet === 'score' && (
+        {showSection('score') && (
           hasScore ? (
             <div>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>Score NeuroPlay — signature Neuroplay Xpériences</p>
