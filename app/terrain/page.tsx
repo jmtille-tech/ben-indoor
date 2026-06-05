@@ -136,6 +136,7 @@ const allPostesNeuroaccess = protocoleNeuroaccess.flatMap(p =>
   p.postes.map(poste => ({ ...poste, phase: p.phase }))
 )
 
+<<<<<<< HEAD
 // ── PROTOCOLE NEUROTASTE ──
 const protocoleNeurotaste = [
   {
@@ -361,6 +362,12 @@ const allPostesNeuromedia = protocoleNeuromedia.flatMap(p =>
 type TypeDiagnostic = 'cognitif' | 'connecte'
 type TypeMission = 'neuroaccess' | 'neurotaste' | 'neuromedia'
 type Etape = 'choix-diagnostic' | 'choix-mission' | 'selection' | 'intro' | 'terrain' | 'generation' | 'fin'
+=======
+// ── TYPES ──
+type TypeDiagnostic = 'cognitif' | 'connecte'
+type TypeMission = 'neuroaccess' | 'neurotaste' | 'neuromedia'
+type Etape = 'selection' | 'choix-diagnostic' | 'choix-mission' | 'intro' | 'terrain' | 'generation' | 'fin'
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
 
 const REPONSE_SCORES: Record<string, number> = { oui: 10, partiel: 5, non: 0 }
 
@@ -375,6 +382,7 @@ function sanitize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').substring(0, 50)
 }
 
+<<<<<<< HEAD
 // ── Détection du type de média à partir du fichier ou de l'extension ──
 function detectMediaType(file: File): 'photo' | 'video' | 'audio' | 'doc' {
   if (file.type.startsWith('image/')) return 'photo'
@@ -523,6 +531,9 @@ function MediaLightbox({ media, onClose }: { media: any; onClose: () => void }) 
   )
 }
 
+=======
+// ── STYLES COMMUNS ──
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
 const S = {
   page: { minHeight: '100vh', background: '#0d1520', fontFamily: 'Arial, sans-serif' } as React.CSSProperties,
   center: { minHeight: '100vh', background: '#0d1520', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'Arial, sans-serif' },
@@ -536,6 +547,10 @@ const S = {
   card: { background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px' },
 }
 
+<<<<<<< HEAD
+=======
+// ── AVATAR ──
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
 const Avatar = () => (
   <div style={S.avatar}>
     <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -543,7 +558,11 @@ const Avatar = () => (
 )
 
 export default function Terrain() {
+<<<<<<< HEAD
   const [etape, setEtape] = useState<Etape>('choix-diagnostic')
+=======
+  const [etape, setEtape] = useState<Etape>('selection')
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
   const [typeDiagnostic, setTypeDiagnostic] = useState<TypeDiagnostic | null>(null)
   const [typeMission, setTypeMission] = useState<TypeMission | null>(null)
   const [clients, setClients] = useState<any[]>([])
@@ -570,16 +589,24 @@ export default function Terrain() {
   const [enregistrement, setEnregistrement] = useState(false)
   const [uploadingAudio, setUploadingAudio] = useState(false)
 
+<<<<<<< HEAD
   const allPostes = typeMission === 'neurotaste' ? allPostesNeurotaste : typeMission === 'neuromedia' ? allPostesNeuromedia : allPostesNeuroaccess
+=======
+  // Protocole actif selon la mission
+  const allPostes = typeMission === 'neuroaccess' ? allPostesNeuroaccess : allPostesNeuroaccess
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
   const total = allPostes.length
   const poste = allPostes[posteIndex]
   const progression = Math.round((posteIndex / total) * 100)
   const selectedClient = clients.find(c => c.id === selectedClientId)
 
+<<<<<<< HEAD
   // Tous les médias de la session (toutes postes confondus)
   const tousLesMedias = Object.values(mediasParPoste).flat()
   const totalMedias = tousLesMedias.length
 
+=======
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
   useEffect(() => {
     supabase.from('clients').select('id, nom').eq('statut', 'actif').then(({ data }) => {
       if (data) setClients(data)
@@ -605,6 +632,7 @@ export default function Terrain() {
 
     for (const file of Array.from(files)) {
       try {
+<<<<<<< HEAD
         const ext = file.name.split('.').pop()?.toLowerCase() || 'bin'
         const prefix = isDrone ? 'drone' : 'media'
         const path = `${selectedClientId}/${Date.now()}_${prefix}_${sanitize(poste.nom)}_${sanitize(file.name.replace(/\.[^.]+$/, ''))}.${ext}`
@@ -623,6 +651,15 @@ export default function Terrain() {
           poste: poste.nom
         }).select().single()
 
+=======
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+        const path = `${selectedClientId}/${Date.now()}_${sanitize(poste.nom)}_${sanitize(file.name.replace(/\.[^.]+$/, ''))}.${ext}`
+        const isVideo = file.type.startsWith('video/')
+        const { error: uploadError } = await supabase.storage.from('medias').upload(path, file, { cacheControl: '3600', upsert: false })
+        if (uploadError) continue
+        const { data: urlData } = supabase.storage.from('medias').getPublicUrl(path)
+        const { data: mediaData } = await supabase.from('medias').insert({ client_id: selectedClientId, mission_id: selectedMissionId || null, type: isVideo ? 'video' : 'photo', url: urlData.publicUrl, nom: file.name, poste: poste.nom }).select().single()
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
         if (mediaData) newMedias.push(mediaData)
       } catch {}
     }
@@ -638,7 +675,28 @@ export default function Terrain() {
   }
 
   async function handleUploadDrone(e: React.ChangeEvent<HTMLInputElement>) {
+<<<<<<< HEAD
     if (e.target.files) await uploadFiles(e.target.files, true)
+=======
+    const files = e.target.files
+    if (!files || !selectedClientId) return
+    setUploadingDrone(true)
+    const newMedias: any[] = []
+    for (const file of Array.from(files)) {
+      try {
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+        const path = `${selectedClientId}/${Date.now()}_drone_${sanitize(poste.nom)}_${sanitize(file.name.replace(/\.[^.]+$/, ''))}.${ext}`
+        const { error: uploadError } = await supabase.storage.from('medias').upload(path, file, { cacheControl: '3600', upsert: false })
+        if (uploadError) continue
+        const { data: urlData } = supabase.storage.from('medias').getPublicUrl(path)
+        const { data: mediaData } = await supabase.from('medias').insert({ client_id: selectedClientId, mission_id: selectedMissionId || null, type: 'drone', url: urlData.publicUrl, nom: file.name, poste: poste.nom }).select().single()
+        if (mediaData) newMedias.push(mediaData)
+      } catch {}
+    }
+    setMediasParPoste(prev => ({ ...prev, [poste.nom]: [...(prev[poste.nom] || []), ...newMedias] }))
+    setUploadingDrone(false)
+    if (droneInputRef.current) droneInputRef.current.value = ''
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
   }
 
   const toggleEnregistrement = async () => {
@@ -659,6 +717,7 @@ export default function Terrain() {
         const { error: upErr } = await supabase.storage.from('medias').upload(path, file, { upsert: true })
         if (!upErr) {
           const { data: urlData } = supabase.storage.from('medias').getPublicUrl(path)
+<<<<<<< HEAD
           const { data: mediaData } = await supabase.from('medias').insert({
             client_id: selectedClientId,
             mission_id: selectedMissionId || null,
@@ -667,6 +726,9 @@ export default function Terrain() {
             url: urlData.publicUrl,
             nom: file.name
           }).select().single()
+=======
+          const { data: mediaData } = await supabase.from('medias').insert({ client_id: selectedClientId, mission_id: selectedMissionId || null, poste: poste.nom, type: 'audio', url: urlData.publicUrl, nom: file.name }).select().single()
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
           if (mediaData) setMediasParPoste(prev => ({ ...prev, [poste.nom]: [...(prev[poste.nom] || []), mediaData] }))
         }
         setUploadingAudio(false)
@@ -682,20 +744,31 @@ export default function Terrain() {
     if (noteActuelle.trim()) { nouvellesNotes[poste.nom] = noteActuelle; setNotes(nouvellesNotes) }
     const nouvellesReponses = { ...reponsesParPoste, [poste.nom]: reponsesActuelles }
     setReponsesParPoste(nouvellesReponses)
+<<<<<<< HEAD
     const nouvellesReponsesNeuro = { ...reponsesNeuroParPoste }
     if (reponseNeuroActuelle.trim()) nouvellesReponsesNeuro[poste.nom] = reponseNeuroActuelle
     setReponsesNeuroParPoste(nouvellesReponsesNeuro)
     setNoteActuelle('')
     setReponsesActuelles({})
     setReponseNeuroActuelle('')
+=======
+    setNoteActuelle('')
+    setReponsesActuelles({})
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
     if (posteIndex < total - 1) {
       const next = allPostes[posteIndex + 1]
       setReponsesActuelles(nouvellesReponses[next.nom] || {})
       setNoteActuelle(nouvellesNotes[next.nom] || '')
+<<<<<<< HEAD
       setReponseNeuroActuelle(nouvellesReponsesNeuro[next.nom] || '')
       setPosteIndex(posteIndex + 1)
     } else {
       genererRapport(nouvellesNotes, nouvellesReponses, nouvellesReponsesNeuro)
+=======
+      setPosteIndex(posteIndex + 1)
+    } else {
+      genererRapport(nouvellesNotes, nouvellesReponses)
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
     }
   }
 
@@ -704,12 +777,19 @@ export default function Terrain() {
       const prev = allPostes[posteIndex - 1]
       setReponsesActuelles(reponsesParPoste[prev.nom] || {})
       setNoteActuelle(notes[prev.nom] || '')
+<<<<<<< HEAD
       setReponseNeuroActuelle(reponsesNeuroParPoste[prev.nom] || '')
+=======
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
       setPosteIndex(posteIndex - 1)
     }
   }
 
+<<<<<<< HEAD
   async function genererRapport(notesFinales: Record<string, string>, reponsesFinales: Record<string, Record<string, string>>, reponsesNeuroFinales: Record<string, string> = {}) {
+=======
+  async function genererRapport(notesFinales: Record<string, string>, reponsesFinales: Record<string, Record<string, string>>) {
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
     setEtape('generation')
     setErreur('')
     const scoresCalcules: Record<string, number> = {}
@@ -719,6 +799,7 @@ export default function Terrain() {
       const reponses = reponsesFinales[p.nom] || {}
       const lignes = p.questions.map((q, i) => `- ${q} → ${reponses[i] || 'non évalué'}`).join('\n')
       const note = notesFinales[p.nom] || ''
+<<<<<<< HEAD
       const scoreOn10 = (scoresCalcules[p.nom] / 10).toFixed(1)
       notesAvecScores[p.nom] = `Score calculé: ${scoreOn10}/10\n${lignes}${note ? '\nObservations: ' + note : ''}`
     }
@@ -735,6 +816,10 @@ export default function Terrain() {
       if (newMission) finalMissionId = newMission.id
     }
 
+=======
+      notesAvecScores[p.nom] = `Score calculé: ${scoresCalcules[p.nom]}/10\n${lignes}${note ? '\nObservations: ' + note : ''}`
+    }
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
     try {
       const res = await fetch('/api/generer-rapport', {
         method: 'POST',
@@ -742,12 +827,19 @@ export default function Terrain() {
         body: JSON.stringify({
           notes: notesAvecScores,
           scores_calcules: scoresCalcules,
+<<<<<<< HEAD
           reponses_neuro: reponsesNeuroFinales,
           client_nom: selectedClient?.nom || 'Diagnostic terrain',
           client_id: selectedClientId || null,
           mission_id: finalMissionId || null,
           type_mission: typeMission,
           type_diagnostic: typeDiagnostic
+=======
+          client_nom: selectedClient?.nom || 'Diagnostic terrain',
+          mission_id: selectedMissionId || null,
+          type_mission: typeMission,
+          type_diagnostic: typeDiagnostic,
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
         })
       })
       const data = await res.json()
@@ -757,18 +849,26 @@ export default function Terrain() {
   }
 
   function resetAll() {
+<<<<<<< HEAD
     setEtape('choix-diagnostic')
     setTypeDiagnostic(null); setTypeMission(null)
     setPosteIndex(0); setNotes({}); setNoteActuelle(''); setRapport(null)
     setSelectedClientId(''); setSelectedMissionId(''); setMediasParPoste({})
     setReponsesParPoste({}); setReponsesActuelles({})
     setReponsesNeuroParPoste({}); setReponseNeuroActuelle('')
+=======
+    setEtape('selection'); setTypeDiagnostic(null); setTypeMission(null)
+    setPosteIndex(0); setNotes({}); setNoteActuelle(''); setRapport(null)
+    setSelectedClientId(''); setSelectedMissionId(''); setMediasParPoste({})
+    setReponsesParPoste({}); setReponsesActuelles({})
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
   }
 
   const scoreColor = (s: number) => s >= 7 ? '#c8f135' : s >= 5 ? '#EF9F27' : '#E24B4A'
   const mediasPosteActuel = mediasParPoste[poste?.nom] || []
 
   // ════════════════════════════════════════
+<<<<<<< HEAD
   // ÉTAPE 1 — CHOIX DIAGNOSTIC
   // ════════════════════════════════════════
   if (etape === 'choix-diagnostic') return (
@@ -884,14 +984,21 @@ export default function Terrain() {
 
   // ════════════════════════════════════════
   // ÉTAPE 3 — SÉLECTION CLIENT
+=======
+  // ÉTAPE 1 — SÉLECTION CLIENT
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
   // ════════════════════════════════════════
   if (etape === 'selection') return (
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Pour quel client ?</h1>
+<<<<<<< HEAD
       <p style={{ ...S.sub, marginBottom: '28px' }}>
         Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'}</strong> · Diagnostic Cognitif
       </p>
+=======
+      <p style={S.sub}>Sélectionne le client avant de démarrer</p>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
       <div style={{ width: '100%', maxWidth: '360px' }}>
         <p style={S.label}>Client</p>
         <select value={selectedClientId} onChange={e => { setSelectedClientId(e.target.value); setSelectedMissionId('') }}
@@ -901,22 +1008,184 @@ export default function Terrain() {
         </select>
         {selectedClientId && missions.length > 0 && (
           <>
+<<<<<<< HEAD
             <p style={S.label}>Mission</p>
             <select value={selectedMissionId} onChange={e => setSelectedMissionId(e.target.value)}
               style={{ ...S.select, marginBottom: '16px', color: selectedMissionId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
+=======
+            <p style={S.label}>Mission (optionnel)</p>
+            <select value={selectedMissionId} onChange={e => setSelectedMissionId(e.target.value)}
+              style={{ ...S.select, marginBottom: '24px', color: selectedMissionId ? '#fff' : 'rgba(255,255,255,0.3)' }}>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
               <option value="">— Sans mission spécifique</option>
               {missions.map(m => <option key={m.id} value={m.id} style={{ background: '#1a2540' }}>{m.type} · {m.date_mission}</option>)}
             </select>
           </>
         )}
+<<<<<<< HEAD
         <button onClick={() => selectedClientId && setEtape('intro')} disabled={!selectedClientId}
           style={{ ...S.btn, maxWidth: '100%', background: selectedClientId ? '#c8f135' : 'rgba(255,255,255,0.1)', color: selectedClientId ? '#0d1520' : 'rgba(255,255,255,0.3)', cursor: selectedClientId ? 'pointer' : 'not-allowed', marginBottom: '12px' }}>
+=======
+        <button onClick={() => selectedClientId && setEtape('choix-diagnostic')} disabled={!selectedClientId}
+          style={{ ...S.btn, maxWidth: '100%', background: selectedClientId ? '#c8f135' : 'rgba(255,255,255,0.1)', color: selectedClientId ? '#0d1520' : 'rgba(255,255,255,0.3)', cursor: selectedClientId ? 'pointer' : 'not-allowed' }}>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
           Continuer →
         </button>
         <button onClick={() => setEtape('choix-mission')} style={{ ...S.btnGhost, width: '100%' }}>
           ← Retour
         </button>
       </div>
+    </main>
+  )
+
+  // ════════════════════════════════════════
+<<<<<<< HEAD
+  // ÉTAPE 4 — INTRO
+  // ════════════════════════════════════════
+  if (etape === 'intro') return (
+    <main style={S.center}>
+      <Avatar />
+      <h1 style={S.title}>Bonjour, je suis Ben</h1>
+      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: '0 0 4px', textAlign: 'center' }}>
+        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'}</strong> · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
+      </p>
+=======
+  // ÉTAPE 2 — CHOIX DIAGNOSTIC
+  // ════════════════════════════════════════
+  if (etape === 'choix-diagnostic') return (
+    <main style={S.center}>
+      <Avatar />
+      <h1 style={S.title}>Type de diagnostic</h1>
+      <p style={{ ...S.sub, marginBottom: '28px' }}>
+        Diagnostic pour <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
+      </p>
+      <div style={{ width: '100%', maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+
+        {/* Cognitif */}
+        <button onClick={() => { setTypeDiagnostic('cognitif'); setEtape('choix-mission') }}
+          style={{ background: 'rgba(200,241,53,0.05)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer', transition: 'all 0.2s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(200,241,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5C7 5 3 9 3 12s4 7 9 7 9-4 9-7-4-7-9-7z" stroke="#c8f135" strokeWidth="1.5"/>
+                <circle cx="12" cy="12" r="3" stroke="#c8f135" strokeWidth="1.5"/>
+                <circle cx="12" cy="12" r="1" fill="#c8f135"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ color: '#c8f135', fontSize: '15px', fontWeight: '700', margin: 0 }}>Diagnostic Cognitif</p>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>IA uniquement · Sans appareil</p>
+            </div>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
+            Analyse comportementale terrain guidée par BEN™. Génération automatique du rapport via IA.
+          </p>
+        </button>
+
+        {/* Connecté */}
+        <button disabled
+          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>
+            BIENTÔT
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M3 12h3l2-5 3 10 2-7 2 4 2-2h4" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: '700', margin: 0 }}>Diagnostic Connecté</p>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', margin: 0 }}>EDA / HRV · Données biométriques</p>
+            </div>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
+            Croise les observations terrain avec les données physiologiques en temps réel.
+          </p>
+        </button>
+      </div>
+      <button onClick={() => setEtape('selection')} style={{ ...S.btnGhost, maxWidth: '360px', width: '100%' }}>
+        ← Retour
+      </button>
+    </main>
+  )
+
+  // ════════════════════════════════════════
+  // ÉTAPE 3 — CHOIX MISSION
+  // ════════════════════════════════════════
+  if (etape === 'choix-mission') return (
+    <main style={S.center}>
+      <Avatar />
+      <h1 style={S.title}>Quelle mission ?</h1>
+      <p style={{ ...S.sub, marginBottom: '28px' }}>
+        Diagnostic Cognitif · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
+      </p>
+      <div style={{ width: '100%', maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+
+        {/* Neuroaccess */}
+        <button onClick={() => { setTypeMission('neuroaccess'); setEtape('intro') }}
+          style={{ background: 'rgba(200,241,53,0.05)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'pointer' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(200,241,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="10" r="3" stroke="#c8f135" strokeWidth="1.5"/>
+                <path d="M12 3C8.13 3 5 6.13 5 10c0 5.25 7 11 7 11s7-5.75 7-11c0-3.87-3.13-7-7-7z" stroke="#c8f135" strokeWidth="1.5" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ color: '#c8f135', fontSize: '15px', fontWeight: '700', margin: 0 }}>Neuroaccess</p>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>{allPostesNeuroaccess.length} postes · Parcours visiteur</p>
+            </div>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
+            Analyse complète du parcours visiteur — avant, pendant et après la visite.
+          </p>
+        </button>
+
+        {/* Neurotaste */}
+        <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>
+            BIENTÔT
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="7" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+                <path d="M9 7v4c0 1.1.9 2 2 2h.5M10.5 13v4M14 7v2.5a1.5 1.5 0 0 0 3 0V7M15.5 11v6" stroke="rgba(255,255,255,0.3)" strokeWidth="1.4" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: '700', margin: 0 }}>Neurotaste</p>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', margin: 0 }}>Expérience F&B · Protocole en construction</p>
+            </div>
+          </div>
+        </button>
+
+        {/* Neuromedia */}
+        <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>
+            BIENTÔT
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="10" r="4" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+                <circle cx="12" cy="10" r="1.5" fill="rgba(255,255,255,0.3)"/>
+                <path d="M8 4.5A7 7 0 0 1 19 10M16 15.5A7 7 0 0 1 5 10" stroke="rgba(255,255,255,0.3)" strokeWidth="1.3" strokeLinecap="round"/>
+                <rect x="9" y="18" width="6" height="3" rx="1" stroke="rgba(255,255,255,0.3)" strokeWidth="1.3"/>
+                <path d="M12 14v4" stroke="rgba(255,255,255,0.3)" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: '700', margin: 0 }}>Neuromedia</p>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', margin: 0 }}>Captation média · Protocole en construction</p>
+            </div>
+          </div>
+        </button>
+      </div>
+      <button onClick={() => setEtape('choix-diagnostic')} style={{ ...S.btnGhost, maxWidth: '360px', width: '100%' }}>
+        ← Retour
+      </button>
     </main>
   )
 
@@ -928,19 +1197,26 @@ export default function Terrain() {
       <Avatar />
       <h1 style={S.title}>Bonjour, je suis Ben</h1>
       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: '0 0 4px', textAlign: 'center' }}>
-        Mission <strong style={{ color: '#c8f135' }}>{typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'}</strong> · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
+        Mission <strong style={{ color: '#c8f135' }}>Neuroaccess</strong> · <strong style={{ color: '#fff' }}>{selectedClient?.nom}</strong>
       </p>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
       <p style={S.sub}>
         Je vais te guider poste par poste. On a <strong style={{ color: '#fff' }}>{total} postes</strong> à couvrir. Pour chaque question, réponds par{' '}
         <strong style={{ color: '#c8f135' }}>Oui</strong>, <strong style={{ color: '#EF9F27' }}>Partiel</strong> ou <strong style={{ color: '#E24B4A' }}>Non</strong>.
       </p>
       <div style={{ width: '100%', maxWidth: '360px', marginBottom: '24px' }}>
+<<<<<<< HEAD
         {(typeMission === 'neurotaste' ? protocoleNeurotaste : typeMission === 'neuromedia' ? protocoleNeuromedia : protocoleNeuroaccess).map(p => (
+=======
+        {protocoleNeuroaccess.map(p => (
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
           <div key={p.phase} style={{ marginBottom: '12px' }}>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 6px' }}>{p.phase}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {p.postes.map(po => (
-                <span key={po.nom} style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '20px', background: 'rgba(200,241,53,0.08)', border: '0.5px solid rgba(200,241,53,0.2)', color: 'rgba(255,255,255,0.6)' }}>{po.nom}</span>
+                <span key={po.nom} style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '20px', background: 'rgba(200,241,53,0.08)', border: '0.5px solid rgba(200,241,53,0.2)', color: 'rgba(255,255,255,0.6)' }}>
+                  {po.nom}
+                </span>
               ))}
             </div>
           </div>
@@ -959,7 +1235,13 @@ export default function Terrain() {
     <main style={S.center}>
       <Avatar />
       <h1 style={S.title}>Ben analyse tes observations...</h1>
+<<<<<<< HEAD
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>Génération du rapport {typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'} — 20 à 30 secondes</p>
+=======
+      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center', margin: '0 0 32px' }}>
+        Génération du rapport Neuroaccess — 20 à 30 secondes
+      </p>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
       <div style={{ display: 'flex', gap: '8px' }}>
         {[0, 1, 2].map(i => (
           <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c8f135', animation: `pulse ${0.8 + i * 0.2}s ease-in-out infinite alternate` }} />
@@ -970,18 +1252,29 @@ export default function Terrain() {
   )
 
   // ════════════════════════════════════════
+<<<<<<< HEAD
   // ÉTAPE 6 — FIN (avec galerie médias)
   // ════════════════════════════════════════
   if (etape === 'fin') return (
     <main style={{ ...S.page, padding: '24px' }}>
       {lightboxMedia && <MediaLightbox media={lightboxMedia} onClose={() => setLightboxMedia(null)} />}
 
+=======
+  // ÉTAPE 6 — FIN
+  // ════════════════════════════════════════
+  if (etape === 'fin') return (
+    <main style={{ ...S.page, padding: '24px' }}>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '24px' }}>
         <div style={{ width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c8f135', marginBottom: '16px' }}>
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <h1 style={{ color: '#c8f135', fontSize: '20px', fontWeight: '700', margin: '0 0 8px', textAlign: 'center' }}>
+<<<<<<< HEAD
           {rapport ? `Rapport ${typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'} généré !` : 'Diagnostic terminé'}
+=======
+          {rapport ? 'Rapport Neuroaccess généré !' : 'Diagnostic terminé'}
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', textAlign: 'center', margin: 0 }}>
           {rapport ? `Ben a analysé le parcours visiteur de ${selectedClient?.nom}` : erreur}
@@ -990,8 +1283,12 @@ export default function Terrain() {
 
       {rapport && (
         <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+<<<<<<< HEAD
           {/* Score global */}
           <div style={{ ...S.card, textAlign: 'center', marginBottom: '12px' }}>
+=======
+          <div style={{ textAlign: 'center', padding: '20px', ...S.card, marginBottom: '12px' }}>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
             <p style={{ fontSize: '48px', fontWeight: '700', color: '#c8f135', margin: '0 0 4px', lineHeight: 1 }}>{rapport.executive_summary?.score_global}</p>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Score global / 10</p>
           </div>
@@ -1011,9 +1308,13 @@ export default function Terrain() {
               ))}
             </div>
           </div>
+<<<<<<< HEAD
 
           {/* Score par poste */}
           <div style={{ ...S.card, marginBottom: '12px' }}>
+=======
+          <div style={{ ...S.card, marginBottom: '20px' }}>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>Score Neuroaccess</p>
             {Object.entries(rapport.score_neuroaccess || rapport.score_neuroplay || {}).map(([key, val]: any) => (
               <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
@@ -1092,7 +1393,13 @@ export default function Terrain() {
           {/* Actions */}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={resetAll} style={{ flex: 1, ...S.btnGhost }}>Nouveau diagnostic</button>
+<<<<<<< HEAD
             <button onClick={() => window.location.href = '/dashboard'} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>Dashboard →</button>
+=======
+            <button onClick={() => window.location.href = '/dashboard'} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
+              Dashboard →
+            </button>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
           </div>
         </div>
       )}
@@ -1104,14 +1411,22 @@ export default function Terrain() {
   // ════════════════════════════════════════
   return (
     <main style={S.page}>
+<<<<<<< HEAD
       {lightboxMedia && <MediaLightbox media={lightboxMedia} onClose={() => setLightboxMedia(null)} />}
 
+=======
+      {/* Header */}
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
       <div style={{ background: '#111d30', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', border: '1.5px solid #c8f135', flexShrink: 0 }}>
           <img src="/ben.jpg" alt="Ben" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div style={{ flex: 1 }}>
+<<<<<<< HEAD
           <p style={{ color: '#c8f135', fontSize: '13px', fontWeight: '700', margin: 0 }}>Ben · {typeMission === 'neurotaste' ? 'Neurotaste' : typeMission === 'neuromedia' ? 'Neuromedia' : 'Neuroaccess'} · {selectedClient?.nom}</p>
+=======
+          <p style={{ color: '#c8f135', fontSize: '13px', fontWeight: '700', margin: 0 }}>Ben · Neuroaccess · {selectedClient?.nom}</p>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
           <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', margin: 0 }}>{poste.phase}</p>
         </div>
         <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{posteIndex + 1}/{total}</span>
@@ -1119,11 +1434,13 @@ export default function Terrain() {
           style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '20px', cursor: 'pointer', padding: '4px 8px' }}>✕</button>
       </div>
 
+      {/* Barre progression */}
       <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)' }}>
         <div style={{ height: '3px', width: `${progression}%`, background: '#c8f135', transition: 'width 0.3s' }} />
       </div>
 
       <div style={{ padding: '20px' }}>
+        {/* Titre poste */}
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Poste {posteIndex + 1}</p>
           <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: '700', margin: 0 }}>{poste.nom}</h2>
@@ -1168,6 +1485,7 @@ export default function Terrain() {
         {/* Question neuro */}
         <div style={{ background: 'rgba(200,241,53,0.05)', borderRadius: '12px', padding: '14px', marginBottom: '12px', border: '0.5px solid rgba(200,241,53,0.15)' }}>
           <p style={{ fontSize: '11px', color: '#c8f135', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Question neuro</p>
+<<<<<<< HEAD
           <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', margin: '0 0 12px', lineHeight: 1.6 }}>{poste.neuro}</p>
           <textarea
             value={reponseNeuroActuelle}
@@ -1176,15 +1494,22 @@ export default function Terrain() {
             rows={2}
             style={{ width: '100%', background: 'rgba(200,241,53,0.05)', border: '0.5px solid rgba(200,241,53,0.2)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '13px', resize: 'none', fontFamily: 'Arial', boxSizing: 'border-box', lineHeight: 1.5 }}
           />
+=======
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', margin: 0, lineHeight: 1.6 }}>{poste.neuro}</p>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
         </div>
 
         {/* Zone médias */}
         <div style={{ background: 'rgba(55,138,221,0.05)', borderRadius: '12px', padding: '14px', marginBottom: '12px', border: '0.5px solid rgba(55,138,221,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: mediasPosteActuel.length > 0 ? '12px' : '0' }}>
             <p style={{ fontSize: '11px', color: 'rgba(55,138,221,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
+<<<<<<< HEAD
               Médias {mediasPosteActuel.length > 0 && (
                 <span style={{ marginLeft: '8px', background: 'rgba(55,138,221,0.2)', borderRadius: '10px', padding: '1px 7px', fontSize: '10px' }}>{mediasPosteActuel.length}</span>
               )}
+=======
+              Médias {mediasPosteActuel.length > 0 && <span style={{ marginLeft: '8px', background: 'rgba(55,138,221,0.2)', borderRadius: '10px', padding: '1px 7px', fontSize: '10px' }}>{mediasPosteActuel.length}</span>}
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
             </p>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               {/* Input fichier — TOUS types */}
@@ -1211,11 +1536,15 @@ export default function Terrain() {
               </button>
               <button onClick={toggleEnregistrement} disabled={uploadingAudio}
                 style={{ background: enregistrement ? 'rgba(255,59,48,0.2)' : 'rgba(255,149,0,0.15)', border: enregistrement ? '1px solid rgba(255,59,48,0.5)' : '1px solid rgba(255,149,0,0.3)', borderRadius: '8px', color: enregistrement ? 'rgb(255,59,48)' : 'rgba(255,149,0,0.9)', fontSize: '12px', fontWeight: '600', padding: '5px 10px', cursor: 'pointer' }}>
+<<<<<<< HEAD
                 {uploadingAudio ? 'Envoi...' : enregistrement ? '⏹ Stop' : '🎙 Vocal'}
+=======
+                {uploadingAudio ? 'Envoi...' : enregistrement ? '⏹ Stop' : 'Vocal'}
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
               </button>
               <button onClick={() => droneInputRef.current?.click()} disabled={uploadingDrone}
                 style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '8px', color: 'rgba(139,92,246,0.9)', fontSize: '12px', fontWeight: '600', padding: '5px 10px', cursor: uploadingDrone ? 'wait' : 'pointer', opacity: uploadingDrone ? 0.6 : 1 }}>
-                {uploadingDrone ? 'Upload...' : '🚁 Drone'}
+                {uploadingDrone ? 'Upload...' : 'Drone'}
               </button>
             </div>
           </div>
@@ -1224,8 +1553,16 @@ export default function Terrain() {
           {mediasPosteActuel.length > 0 && (
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {mediasPosteActuel.map(m => (
+<<<<<<< HEAD
                 <div key={m.id} onClick={() => setLightboxMedia(m)} style={{ cursor: 'pointer' }}>
                   <MediaThumb media={m} size={70} />
+=======
+                <div key={m.id} style={{ width: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${m.type === 'drone' ? 'rgba(139,92,246,0.4)' : 'rgba(55,138,221,0.3)'}` }}>
+                  {m.type === 'audio'
+                    ? <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,149,0,0.1)', fontSize: '24px' }}>🎙</div>
+                    : <img src={m.url} alt={m.nom} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  }
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
                 </div>
               ))}
             </div>
@@ -1242,7 +1579,11 @@ export default function Terrain() {
         {/* Navigation */}
         <div style={{ display: 'flex', gap: '10px' }}>
           {posteIndex > 0 && (
+<<<<<<< HEAD
             <button onClick={precedent} style={{ flex: 1, ...S.btnGhost }}>&#x2190; Précédent</button>
+=======
+            <button onClick={precedent} style={{ flex: 1, ...S.btnGhost }}>← Précédent</button>
+>>>>>>> c6d5a79 (feat: rapport dark avec onglets + teaser connecté)
           )}
           <button onClick={sauvegarderEtContinuer} style={{ flex: 2, background: '#c8f135', color: '#0d1520', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
             {posteIndex < total - 1 ? 'Suivant →' : 'Générer le rapport ✓'}
