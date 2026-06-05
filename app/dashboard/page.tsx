@@ -9,10 +9,13 @@ export default function Dashboard() {
   const [medias, setMedias] = useState<any[]>([])
   const [onglet, setOnglet] = useState<'missions' | 'medias'>('missions')
   const [filtreClient, setFiltreClient] = useState<string>('tous')
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) window.location.href = '/'
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { window.location.href = '/'; return }
+      const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', data.user.id).single()
+      if (profile?.role === 'admin') setIsAdmin(true)
       else setUser(data.user)
     })
     loadMissions()
@@ -28,6 +31,12 @@ export default function Dashboard() {
   async function loadClients() {
     const { data } = await supabase.from('clients').select('id, nom, secteur_cible, plan, offres_actives, statut').order('created_at', { ascending: false })
     if (data) setClients(data)
+  }
+
+  async function deleteMedia(id: string) {
+    if (!confirm('Supprimer ce média ?')) return
+    await supabase.from('medias').delete().eq('id', id)
+    setMedias(prev => prev.filter((m: any) => m.id !== id))
   }
 
   async function loadMedias() {
@@ -229,7 +238,9 @@ export default function Dashboard() {
                     </div>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       {items.map((m: any) => (
-                        <a key={m.id} href={m.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                        <div key={m.id} style={{ position: 'relative', display: 'inline-block' }}>
+                          {isAdmin && <button onClick={() => deleteMedia(m.id)} style={{ position: 'absolute', top: '-6px', right: '-6px', zIndex: 10, width: '18px', height: '18px', borderRadius: '50%', background: '#E24B4A', border: 'none', color: '#fff', fontSize: '12px', cursor: 'pointer', lineHeight: '18px', textAlign: 'center', padding: 0 }}>×</button>}
+                          <a href={m.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                           <div style={{ width: '72px', height: '72px', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${typeBorder(m.type)}`, background: typeBg(m.type), display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '4px', position: 'relative' }}>
                             {(m.type === 'photo' || (m.type === 'drone' && m.url?.match(/\.(jpg|jpeg|png|gif|webp)/i)))
                               ? <img src={m.url} alt={m.nom} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -252,6 +263,7 @@ export default function Dashboard() {
                             )}
                           </div>
                         </a>
+                        </div>
                       ))}
                     </div>
                     {/* Nom client si filtre "tous" */}
