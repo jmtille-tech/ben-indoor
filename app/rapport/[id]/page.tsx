@@ -6,22 +6,13 @@ import { supabase } from '../../../lib/supabase'
 function TeaserConnecte({ titre, description, icone }: { titre: string; description: string; icone: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', textAlign: 'center', padding: '40px' }}>
-      {/* Icone */}
       <div style={{ fontSize: '48px', marginBottom: '24px' }}>{icone}</div>
-
-      {/* Badge */}
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(200,241,53,0.08)', border: '1px solid rgba(200,241,53,0.2)', borderRadius: '20px', padding: '5px 14px', marginBottom: '20px' }}>
         <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c8f135' }} />
         <span style={{ fontSize: '11px', color: '#c8f135', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Disponible en diagnostic connecté</span>
       </div>
-
-      {/* Titre */}
       <h2 style={{ color: '#fff', fontSize: '22px', fontWeight: '700', margin: '0 0 12px', lineHeight: 1.3 }}>{titre}</h2>
-
-      {/* Description */}
       <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px', lineHeight: 1.7, maxWidth: '480px', margin: '0 0 32px' }}>{description}</p>
-
-      {/* Ce que ça apporte */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', maxWidth: '600px', marginBottom: '40px' }}>
         {[
           { icon: '📡', label: 'Capteurs biométriques', desc: 'EDA, HRV, eye-tracking en temps réel' },
@@ -35,8 +26,6 @@ function TeaserConnecte({ titre, description, icone }: { titre: string; descript
           </div>
         ))}
       </div>
-
-      {/* CTA */}
       <div style={{ display: 'flex', gap: '12px' }}>
         <a href="mailto:jmtille@neuroplayxperiences.com?subject=Demande diagnostic connecté BEN" style={{ background: '#c8f135', border: 'none', borderRadius: '8px', color: '#0d1520', fontSize: '13px', fontWeight: '700', padding: '10px 24px', cursor: 'pointer', textDecoration: 'none' }}>
           Demander une démonstration
@@ -45,11 +34,73 @@ function TeaserConnecte({ titre, description, icone }: { titre: string; descript
           En savoir plus
         </button>
       </div>
-
-      {/* Note bas */}
       <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', margin: '24px 0 0' }}>
         Ce rapport est basé sur un diagnostic cognitif terrain. Le diagnostic connecté enrichit l'analyse avec des données physiologiques objectives.
       </p>
+    </div>
+  )
+}
+
+// ── Jauge circulaire SVG ──────────────────────────────────────────────────────
+function GaugeCircle({ score, label }: { score: number; label: string }) {
+  const r = 26, circ = 2 * Math.PI * r
+  const dash = (score / 10) * circ
+  const color = score >= 7 ? '#c8f135' : score >= 5 ? '#EF9F27' : '#E24B4A'
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="5" />
+        <circle cx="32" cy="32" r={r} fill="none" stroke={color} strokeWidth="5"
+          strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
+          transform="rotate(-90 32 32)" />
+        <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="700" fill={color} fontFamily="Arial">{score}</text>
+      </svg>
+      <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: 0, textAlign: 'center', maxWidth: '70px', lineHeight: 1.3 }}>{label}</p>
+    </div>
+  )
+}
+
+// ── Timeline plan d'action ────────────────────────────────────────────────────
+function Timeline({ items }: { items: any[] }) {
+  const phases = [
+    { label: 'Immédiat', color: '#E24B4A', icon: '🚨' },
+    { label: '< 2 semaines', color: '#EF9F27', icon: '⚡' },
+    { label: '1-3 mois', color: '#378ADD', icon: '📋' },
+    { label: '6-12 mois', color: 'rgba(255,255,255,0.4)', icon: '🎯' },
+  ]
+
+  const getPhase = (delai: string) => {
+    const d = (delai || '').toLowerCase()
+    if (d.includes('immédiat') || d.includes('immediat')) return 0
+    if (d.includes('semaine')) return 1
+    if (d.includes('mois') && !d.includes('6') && !d.includes('12')) return 2
+    return 3
+  }
+
+  const grouped: any[][] = [[], [], [], []]
+  items.forEach(item => grouped[getPhase(item.delai)].push(item))
+
+  return (
+    <div style={{ marginBottom: '24px' }}>
+      {/* Axe timeline */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '20px' }}>
+        {phases.map((phase, pi) => (
+          <div key={pi} style={{ flex: 1, position: 'relative' }}>
+            {pi < phases.length - 1 && (
+              <div style={{ position: 'absolute', top: '16px', left: '50%', right: '-50%', height: '1px', background: 'rgba(255,255,255,0.08)', zIndex: 0 }} />
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: grouped[pi].length > 0 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', border: `1px solid ${grouped[pi].length > 0 ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', marginBottom: '6px' }}>
+                {grouped[pi].length > 0 ? phase.icon : '○'}
+              </div>
+              <p style={{ fontSize: '10px', fontWeight: '700', color: grouped[pi].length > 0 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.2)', margin: '0 0 2px', textAlign: 'center' }}>{phase.label}</p>
+              <span style={{ fontSize: '10px', background: grouped[pi].length > 0 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', color: grouped[pi].length > 0 ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)', padding: '1px 7px', borderRadius: '20px', fontWeight: '700' }}>
+                {grouped[pi].length} action{grouped[pi].length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -70,7 +121,6 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
   useEffect(() => {
     if (onglet !== 'neuroimpact' || !rapport) return
     const ni = rapport.neuro_impact || {}
-    // Seulement si données connectées présentes
     if (!ni.eda && !ni.hrv) return
     const drawChart = (id: string, data: number[], color: string, bgColor: string) => {
       const canvas = document.getElementById(id) as HTMLCanvasElement
@@ -82,30 +132,14 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
           type: 'line',
           data: {
             labels: ['Entrée', 'Billetterie', 'Parcours', 'Attraction', 'F&B', 'Sortie'],
-            datasets: [{
-              data,
-              borderColor: color,
-              backgroundColor: bgColor,
-              borderWidth: 2,
-              fill: true,
-              tension: 0.4,
-              pointRadius: 3,
-              pointBackgroundColor: color
-            }]
+            datasets: [{ data, borderColor: color, backgroundColor: bgColor, borderWidth: 2, fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: color }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-              x: {
-                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, maxRotation: 0, autoSkip: false },
-                grid: { color: 'rgba(255,255,255,0.04)' }
-              },
-              y: {
-                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
-                grid: { color: 'rgba(255,255,255,0.04)' }
-              }
+              x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, maxRotation: 0, autoSkip: false }, grid: { color: 'rgba(255,255,255,0.04)' } },
+              y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
             }
           }
         })
@@ -128,26 +162,11 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
         type: 'radar',
         data: {
           labels: ['Accessibilité', 'Fluidité', 'Clarté', 'Plaisir', 'Perf. commerciale'],
-          datasets: [{
-            data: [sn.accessibilite, sn.fluidite, sn.clarte, sn.plaisir, sn.performance_commerciale],
-            backgroundColor: 'rgba(200,241,53,0.12)',
-            borderColor: '#c8f135',
-            borderWidth: 2,
-            pointBackgroundColor: '#c8f135',
-            pointRadius: 4
-          }]
+          datasets: [{ data: [sn.accessibilite, sn.fluidite, sn.clarte, sn.plaisir, sn.performance_commerciale], backgroundColor: 'rgba(200,241,53,0.12)', borderColor: '#c8f135', borderWidth: 2, pointBackgroundColor: '#c8f135', pointRadius: 4 }]
         },
         options: {
           responsive: false,
-          scales: {
-            r: {
-              min: 0, max: 10,
-              ticks: { stepSize: 2, color: 'rgba(255,255,255,0.2)', font: { size: 10 }, backdropColor: 'transparent' },
-              grid: { color: 'rgba(255,255,255,0.08)' },
-              angleLines: { color: 'rgba(255,255,255,0.08)' },
-              pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 11 } }
-            }
-          },
+          scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, color: 'rgba(255,255,255,0.2)', font: { size: 10 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.08)' }, angleLines: { color: 'rgba(255,255,255,0.08)' }, pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 11 } } } },
           plugins: { legend: { display: false } }
         }
       })
@@ -155,50 +174,24 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
   }, [onglet, rapport])
 
   async function loadRapport() {
-    const { data: m } = await supabase
-      .from('missions')
-      .select('*, clients(nom, secteur)')
-      .eq('id', id)
-      .single()
+    const { data: m } = await supabase.from('missions').select('*, clients(nom, secteur)').eq('id', id).single()
     if (m) setMission(m)
-    const { data: r } = await supabase
-      .from('rapports')
-      .select('*')
-      .eq('mission_id', id)
-      .single()
+    const { data: r } = await supabase.from('rapports').select('*').eq('mission_id', id).single()
     if (r) setRapport(r)
   }
 
   async function handleRetour() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { window.location.href = '/'; return }
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', user.id).single()
     window.location.href = profile?.role === 'admin' ? '/dashboard' : '/client'
   }
 
   const scoreColor = (s: number) => s >= 7 ? '#c8f135' : s >= 5 ? '#EF9F27' : '#E24B4A'
-  const interpColor: any = {
-    flow: '#1D9E75', waouh: '#1D9E75',
-    stress_modere: '#EF9F27', confusion: '#EF9F27',
-    stress_fort: '#E24B4A'
-  }
-  const interpLabel: any = {
-    flow: 'Flow', waouh: 'Waouh',
-    stress_modere: 'Stress modéré', confusion: 'Confusion',
-    stress_fort: 'Stress fort'
-  }
-  const syntheseColor: any = {
-    critique: '#E24B4A', quickwin: '#c8f135',
-    optimisation: '#378ADD', long_terme: 'rgba(255,255,255,0.4)'
-  }
-  const syntheseLabel: any = {
-    critique: 'Friction critique', quickwin: 'Quick win',
-    optimisation: 'Optimisation', long_terme: 'Long terme'
-  }
+  const interpColor: any = { flow: '#1D9E75', waouh: '#1D9E75', stress_modere: '#EF9F27', confusion: '#EF9F27', stress_fort: '#E24B4A' }
+  const interpLabel: any = { flow: 'Flow', waouh: 'Waouh', stress_modere: 'Stress modéré', confusion: 'Confusion', stress_fort: 'Stress fort' }
+  const syntheseColor: any = { critique: '#E24B4A', quickwin: '#c8f135', optimisation: '#378ADD', long_terme: 'rgba(255,255,255,0.4)' }
+  const syntheseLabel: any = { critique: 'Friction critique', quickwin: 'Quick win', optimisation: 'Optimisation', long_terme: 'Long terme' }
 
   const onglets = [
     { id: 'exec', label: 'Executive Summary', connecte: false },
@@ -224,13 +217,20 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
   const syn = rapport.synthese || []
   const sn = rapport.score_neuroplay || {}
 
-  // Détecte si les données connectées sont présentes
   const hasNeuroImpact = ni && (ni.eda || ni.hrv || ni.zones?.length > 0)
   const hasScore = sn && Object.keys(sn).length > 0 && sn.accessibilite
+
+  // Tous les scores parcours pour le scorecard
+  const allScores = [
+    ...(parc.avant || []),
+    ...(parc.pendant || []),
+    ...(parc.apres || []),
+  ]
 
   return (
     <main style={{ minHeight: '100vh', background: '#0d1520', fontFamily: 'Arial, sans-serif' }}>
 
+      {/* Header */}
       <div style={{ background: '#111d30', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button onClick={handleRetour} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: 'rgba(255,255,255,0.5)', padding: '5px 12px', fontSize: '12px', cursor: 'pointer' }}>← Retour</button>
@@ -264,12 +264,28 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
 
       <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}>
 
+        {/* ── EXECUTIVE SUMMARY ── */}
         {onglet === 'exec' && (
           <div>
+            {/* Score global */}
             <div style={{ textAlign: 'center', padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '20px' }}>
               <p style={{ fontSize: '64px', fontWeight: '700', color: '#c8f135', margin: '0 0 4px', lineHeight: 1 }}>{ex.score_global}</p>
               <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Score global expérience / 10</p>
             </div>
+
+            {/* ── NOUVEAU : Scorecard jauges ── */}
+            {allScores.length > 0 && (
+              <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', padding: '20px', marginBottom: '16px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>Vue d'ensemble — scores par dimension</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
+                  {allScores.map((item: any) => (
+                    <GaugeCircle key={item.label} score={item.score} label={item.label} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Frictions / Opportunités / Insight */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
               {[
                 { label: '3 frictions majeures', items: ex.frictions || [], color: '#E24B4A' },
@@ -287,6 +303,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
           </div>
         )}
 
+        {/* ── PARCOURS ── */}
         {onglet === 'parcours' && (
           <div>
             {[
@@ -310,6 +327,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
           </div>
         )}
 
+        {/* ── COGNITIF ── */}
         {onglet === 'cognitif' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
             {[
@@ -328,6 +346,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
           </div>
         )}
 
+        {/* ── NEUROIMPACT ── */}
         {onglet === 'neuroimpact' && (
           hasNeuroImpact ? (
             <div>
@@ -338,38 +357,24 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
                 <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
                   <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>EDA — Réponse électrodermale</p>
-                  {[
-                    ['Niveau moyen', `${ni.eda?.moyenne} µS`],
-                    ['Pic maximal', `${ni.eda?.pic_max} µS`],
-                    ['Pic minimal', `${ni.eda?.pic_min} µS`],
-                    ['Zones de stress', `${ni.eda?.zones_stress} détectées`]
-                  ].map(([k, v]: any) => (
+                  {[['Niveau moyen', `${ni.eda?.moyenne} µS`], ['Pic maximal', `${ni.eda?.pic_max} µS`], ['Pic minimal', `${ni.eda?.pic_min} µS`], ['Zones de stress', `${ni.eda?.zones_stress} détectées`]].map(([k, v]: any) => (
                     <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{k}</span>
                       <span style={{ fontSize: '13px', fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>{v}</span>
                     </div>
                   ))}
-                  <div style={{ position: 'relative', height: '130px', marginTop: '16px' }}>
-                    <canvas id="edaChart" />
-                  </div>
+                  <div style={{ position: 'relative', height: '130px', marginTop: '16px' }}><canvas id="edaChart" /></div>
                   <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', margin: '6px 0 0', textAlign: 'center' }}>Parcours chronologique — de l'entrée à la sortie</p>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
                   <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>HRV — Variabilité cardiaque</p>
-                  {[
-                    ['HRV moyen', `${ni.hrv?.moyenne} ms`],
-                    ['HRV minimum', `${ni.hrv?.minimum} ms`],
-                    ['HRV maximum', `${ni.hrv?.maximum} ms`],
-                    ['Zones de flow', `${ni.hrv?.zones_flow} détectées`]
-                  ].map(([k, v]: any) => (
+                  {[['HRV moyen', `${ni.hrv?.moyenne} ms`], ['HRV minimum', `${ni.hrv?.minimum} ms`], ['HRV maximum', `${ni.hrv?.maximum} ms`], ['Zones de flow', `${ni.hrv?.zones_flow} détectées`]].map(([k, v]: any) => (
                     <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{k}</span>
                       <span style={{ fontSize: '13px', fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>{v}</span>
                     </div>
                   ))}
-                  <div style={{ position: 'relative', height: '130px', marginTop: '16px' }}>
-                    <canvas id="hrvChart" />
-                  </div>
+                  <div style={{ position: 'relative', height: '130px', marginTop: '16px' }}><canvas id="hrvChart" /></div>
                   <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', margin: '6px 0 0', textAlign: 'center' }}>HRV élevé = détente & engagement · HRV bas = stress</p>
                 </div>
               </div>
@@ -384,17 +389,19 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
               ))}
             </div>
           ) : (
-            <TeaserConnecte
-              icone="📡"
-              titre="NeuroImpact — Signaux physiologiques"
-              description="Cette section présente les données biométriques captées en temps réel lors du parcours visiteur : réponse électrodermale (EDA), variabilité cardiaque (HRV) et corrélation avec les zones d'expérience. Disponible uniquement dans le cadre d'un diagnostic connecté."
-            />
+            <TeaserConnecte icone="📡" titre="NeuroImpact — Signaux physiologiques" description="Cette section présente les données biométriques captées en temps réel lors du parcours visiteur : réponse électrodermale (EDA), variabilité cardiaque (HRV) et corrélation avec les zones d'expérience. Disponible uniquement dans le cadre d'un diagnostic connecté." />
           )
         )}
 
+        {/* ── SYNTHESE ── */}
         {onglet === 'synthese' && (
           <div>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 12px' }}>Plan d'action stratégique</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>Plan d'action stratégique</p>
+
+            {/* ── NOUVEAU : Timeline visuelle ── */}
+            {syn.length > 0 && <Timeline items={syn} />}
+
+            {/* Liste détaillée */}
             {syn.map((r: any, i: number) => (
               <div key={i} style={{ display: 'flex', gap: '12px', padding: '12px 0', borderBottom: '0.5px solid rgba(255,255,255,0.05)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '20px', background: `${syntheseColor[r.type]}18`, color: syntheseColor[r.type], border: `1px solid ${syntheseColor[r.type]}40`, flexShrink: 0, whiteSpace: 'nowrap' }}>{syntheseLabel[r.type]}</span>
@@ -407,6 +414,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
           </div>
         )}
 
+        {/* ── SCORE ── */}
         {onglet === 'score' && (
           hasScore ? (
             <div>
@@ -439,11 +447,7 @@ export default function Rapport({ params }: { params: Promise<{ id: string }> })
               </div>
             </div>
           ) : (
-            <TeaserConnecte
-              icone="🎯"
-              titre="Score NeuroPlay — Signature globale"
-              description="Le Score NeuroPlay agrège les données physiologiques et comportementales en 5 dimensions clés : Accessibilité, Fluidité, Clarté, Plaisir et Performance commerciale. Ce scoring enrichi est généré à partir des données captées lors d'un diagnostic connecté."
-            />
+            <TeaserConnecte icone="🎯" titre="Score NeuroPlay — Signature globale" description="Le Score NeuroPlay agrège les données physiologiques et comportementales en 5 dimensions clés : Accessibilité, Fluidité, Clarté, Plaisir et Performance commerciale. Ce scoring enrichi est généré à partir des données captées lors d'un diagnostic connecté." />
           )
         )}
 
