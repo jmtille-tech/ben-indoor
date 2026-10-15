@@ -157,7 +157,7 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     <div class="cell">
       <div class="cell-badge" style="background:#FBEAF0; color:#993556;">Expérience Signature</div>
       <div class="cell-title">Co-construction d'une expérience unique</div>
-      <div class="cell-desc">Basée sur les données physiologiques réelles — crée un moment différenciant mémorable pour visiteurs et entreprises</div>
+      <div class="cell-desc">Basée sur les données cognitives réelles du diagnostic — crée un moment différenciant mémorable pour visiteurs et entreprises</div>
       <div class="cell-chiffre" style="color:#993556;">47% des visiteurs acceptent un prix plus élevé pour une expérience personnalisée*</div>
     </div>
   </div>
