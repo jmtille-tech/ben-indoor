@@ -347,7 +347,7 @@ const protocoleNeuromedia = [
           'Y a-t-il des mécanismes de rareté, d\'urgence ou d\'exclusivité intégrés dans la communication ?',
           'Les messages clés sont-ils formulés pour activer des biais cognitifs positifs (appartenance, statut, nostalgie) ?',
         ],
-        neuro: 'Quels sont les 3 éléments qui créent le plus fort impact émotionnel sur le visiteur ? Comment ces stimuli peuvent-ils être croisés avec les données biométriques EDA/HRV pour cartographier l\'émotion réelle ?',
+        neuro: 'Quels sont les 3 éléments qui créent le plus fort impact émotionnel sur le visiteur ?',
         media: ['Note vocale analyse neuromarketing', 'Photo éléments déclencheurs']
       },
     ]
@@ -358,7 +358,7 @@ const allPostesNeuromedia = protocoleNeuromedia.flatMap(p =>
   p.postes.map(poste => ({ ...poste, phase: p.phase }))
 )
 
-type TypeDiagnostic = 'cognitif' | 'connecte'
+type TypeDiagnostic = 'cognitif'
 type TypeMission = 'neuroaccess' | 'neurotaste' | 'neuromedia'
 type Etape = 'choix-diagnostic' | 'choix-mission' | 'selection' | 'intro' | 'terrain' | 'generation' | 'fin'
 
@@ -795,21 +795,6 @@ export default function Terrain() {
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
             Analyse comportementale terrain guidée par BEN&#x2122;. Génération automatique du rapport via IA.
           </p>
-        </button>
-        <button disabled style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', textAlign: 'left', cursor: 'not-allowed', opacity: 0.5, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '6px', padding: '2px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '600', letterSpacing: '0.06em' }}>BIENTÔT</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M3 12h3l2-5 3 10 2-7 2 4 2-2h4" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: '700', margin: 0 }}>Diagnostic Connecté</p>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', margin: 0 }}>EDA / HRV · Données biométriques</p>
-            </div>
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>Croise les observations terrain avec les données physiologiques en temps réel.</p>
         </button>
       </div>
       <button onClick={() => window.location.href = '/dashboard'} style={{ ...S.btnGhost, maxWidth: '360px', width: '100%' }}>

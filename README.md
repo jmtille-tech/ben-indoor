@@ -2,7 +2,9 @@
 
 Plateforme de diagnostic terrain pour espaces de loisirs **indoor** (trampoline parks, laser games, escape games, salles de sport...).
 
-Version allégée de Ben (neuroaccess-rapports), sans équipement neuro (EDA/HRV), centrée sur l'observation **comportementale et cognitive**.
+Version de Ben (neuroaccess-rapports) dédiée aux loisirs indoor, centrée sur l'observation **comportementale et cognitive**.
+
+> Depuis octobre 2026, BEN est 100 % cognitif : la partie physiologique (NeuroImpact EDA/HRV, onglets « connecté ») ne fait plus partie de l'app. Le code est conservé dans `archive/physio/` (et dans la branche `archive/physio-v1`) pour l'app « Parcours des émotions ».
 
 ---
 
@@ -90,8 +92,8 @@ ALTER TABLE rapports ADD COLUMN IF NOT EXISTS entretiens_synthese jsonb;
 
 | | Ben (neuroaccess) | Ben Indoor |
 |---|---|---|
-| Équipement | EDA, HRV, eye-tracking (futur) | Aucun |
+| Équipement | Aucun (physio archivée) | Aucun |
 | Protocole | 11 postes + neuro | 10 postes comportementaux |
-| Rapport | Inclut NeuroImpact EDA/HRV | Analyse comportementale + cognitive |
+| Rapport | Analyse cognitive (sans NeuroImpact ni Score NeuroPlay) | Analyse comportementale + cognitive (sans NeuroImpact ni Score NeuroPlay) |
 | Micro-entretiens | Non | Oui — intégrés au rapport |
 | Cible | Parcs, musées, zoos | Loisirs indoor |

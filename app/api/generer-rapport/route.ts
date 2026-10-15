@@ -22,7 +22,7 @@ ${notesTexte}
 ${reponsesNeuroTexte ? `
 ---
 OBSERVATIONS NEURO-COMPORTEMENTALES (réponses aux questions cognitives terrain) :
-Ces observations sont des données qualitatives terrain qui croisent la perception cognitive du visiteur. Elles alimentent directement l'analyse cognitive et comportementale du rapport, et serviront de référence pour le croisement futur avec les données biométriques (EDA/HRV) du Diagnostic Connecté.
+Ces observations sont des données qualitatives terrain qui croisent la perception cognitive du visiteur. Elles alimentent directement l'analyse cognitive et comportementale du rapport.
 
 ${reponsesNeuroTexte}
 ` : ''}
@@ -175,7 +175,7 @@ ${notesTexte}
 ${reponsesNeuroTexte ? `
 ---
 OBSERVATIONS NEURO-COMPORTEMENTALES & NEUROMARKETING :
-Ces observations qualitatives terrain analysent les stimuli visuels et émotionnels, les déclencheurs de partage et les moments à fort impact cognitif. Elles sont destinées à être croisées avec les données biométriques EDA/HRV du Diagnostic Connecté.
+Ces observations qualitatives terrain analysent les stimuli visuels et émotionnels, les déclencheurs de partage et les moments à fort impact cognitif.
 
 ${reponsesNeuroTexte}
 ` : ''}
@@ -235,7 +235,7 @@ IMPORTANT : réponds UNIQUEMENT avec le JSON brut, sans markdown, sans backticks
   }
 }
 
-Remplace toutes les valeurs par celles issues de tes observations terrain. L'analyse_cognitive doit refléter les stimuli visuels et émotionnels observés — attention, émotion, mémorabilité, partage. Les observations neuro doivent enrichir les recommandations neuromarketing et identifier les données à croiser avec EDA/HRV. IMPORTANT : tous les scores sur 10 maximum. Sois précis, actionnable, orienté activation et impact émotionnel réel.`
+Remplace toutes les valeurs par celles issues de tes observations terrain. L'analyse_cognitive doit refléter les stimuli visuels et émotionnels observés — attention, émotion, mémorabilité, partage. Les observations neuro doivent enrichir les recommandations neuromarketing. IMPORTANT : tous les scores sur 10 maximum. Sois précis, actionnable, orienté activation et impact émotionnel réel.`
 }
 
 export async function POST(req: NextRequest) {
@@ -304,7 +304,7 @@ export async function POST(req: NextRequest) {
         analyse_comportementale: rapportData.analyse_comportementale,
         synthese: rapportData.synthese,
         score_neuroplay: rapportData.score_neuroaccess,
-        // Stocker les réponses neuro pour croisement futur avec données biométriques
+        // Réponses aux questions cognitives terrain
         reponses_neuro: reponses_neuro || {},
         publie: true,
         share_token: shareToken,
