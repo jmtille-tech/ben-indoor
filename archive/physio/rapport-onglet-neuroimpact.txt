@@ -1,0 +1,48 @@
+// ARCHIVE — onglet NeuroImpact (corps + teaser) de la page rapport, état physio-v1. Utilise : ni, hasNeuroImpact, interpColor, interpLabel, TeaserConnecte.
+        {/* ── NEUROIMPACT ── */}
+        {showSection('neuroimpact') && (
+          hasNeuroImpact ? (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ background: 'rgba(200,241,53,0.12)', border: '1px solid rgba(200,241,53,0.3)', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#c8f135', fontWeight: '700' }}>NeuroImpact</span>
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 0 }}>{ni.protocole}</p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>EDA — Réponse électrodermale</p>
+                  {[['Niveau moyen', `${ni.eda?.moyenne} µS`], ['Pic maximal', `${ni.eda?.pic_max} µS`], ['Pic minimal', `${ni.eda?.pic_min} µS`], ['Zones de stress', `${ni.eda?.zones_stress} détectées`]].map(([k, v]: any) => (
+                    <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{k}</span>
+                      <span style={{ fontSize: '13px', fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>{v}</span>
+                    </div>
+                  ))}
+                  <div style={{ position: 'relative', height: '130px', marginTop: '16px' }}><canvas id="edaChart" /></div>
+                  <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', margin: '6px 0 0', textAlign: 'center' }}>Parcours chronologique — de l'entrée à la sortie</p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>HRV — Variabilité cardiaque</p>
+                  {[['HRV moyen', `${ni.hrv?.moyenne} ms`], ['HRV minimum', `${ni.hrv?.minimum} ms`], ['HRV maximum', `${ni.hrv?.maximum} ms`], ['Zones de flow', `${ni.hrv?.zones_flow} détectées`]].map(([k, v]: any) => (
+                    <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{k}</span>
+                      <span style={{ fontSize: '13px', fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>{v}</span>
+                    </div>
+                  ))}
+                  <div style={{ position: 'relative', height: '130px', marginTop: '16px' }}><canvas id="hrvChart" /></div>
+                  <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', margin: '6px 0 0', textAlign: 'center' }}>HRV élevé = détente & engagement · HRV bas = stress</p>
+                </div>
+              </div>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 10px' }}>Corrélation zones · signaux physiologiques</p>
+              {(ni.zones || []).map((z: any) => (
+                <div key={z.nom} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: interpColor[z.interpretation], flexShrink: 0 }} />
+                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', flex: 1 }}>{z.nom}</span>
+                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', flex: 1 }}>EDA {z.eda} µS · HRV {z.hrv} ms</span>
+                  <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '20px', background: `${interpColor[z.interpretation]}18`, color: interpColor[z.interpretation], flexShrink: 0 }}>{interpLabel[z.interpretation]}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <TeaserConnecte icone="📡" titre="NeuroImpact — Signaux physiologiques" description="Cette section présente les données biométriques captées en temps réel lors du parcours visiteur : réponse électrodermale (EDA), variabilité cardiaque (HRV) et corrélation avec les zones d'expérience. Disponible uniquement dans le cadre d'un diagnostic connecté." />
+          )
+        )}
+

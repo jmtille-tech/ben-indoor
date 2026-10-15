@@ -1,0 +1,56 @@
+// ARCHIVE — effets Chart.js des onglets NeuroImpact (EDA/HRV) et Score NeuroPlay (radar), page rapport, état physio-v1.
+// ⚠️ Les tableaux EDA/HRV passés à drawChart étaient codés en dur : ils ne venaient pas des données du rapport.
+  useEffect(() => {
+    if (onglet !== 'neuroimpact' || !rapport) return
+    const ni = rapport.neuro_impact || {}
+    if (!ni.eda && !ni.hrv) return
+    const drawChart = (id: string, data: number[], color: string, bgColor: string) => {
+      const canvas = document.getElementById(id) as HTMLCanvasElement
+      if (!canvas || (canvas as any)._drawn) return
+      ;(canvas as any)._drawn = true
+      import('chart.js').then(({ Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler }) => {
+        Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler)
+        new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: ['Entrée', 'Billetterie', 'Parcours', 'Attraction', 'F&B', 'Sortie'],
+            datasets: [{ data, borderColor: color, backgroundColor: bgColor, borderWidth: 2, fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: color }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, maxRotation: 0, autoSkip: false }, grid: { color: 'rgba(255,255,255,0.04)' } },
+              y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            }
+          }
+        })
+      })
+    }
+    drawChart('edaChart', [1.2, 4.8, 2.1, 3.2, 6.8, 2.9], '#c8f135', 'rgba(200,241,53,0.08)')
+    drawChart('hrvChart', [68, 21, 45, 58, 18, 24], '#378ADD', 'rgba(55,138,221,0.08)')
+  }, [onglet, rapport])
+
+  useEffect(() => {
+    if (onglet !== 'score' || !rapport) return
+    const sn = rapport.score_neuroplay || {}
+    if (!sn.accessibilite) return
+    const canvas = document.getElementById('radarChart') as HTMLCanvasElement
+    if (!canvas || (canvas as any)._drawn) return
+    ;(canvas as any)._drawn = true
+    import('chart.js').then(({ Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip }) => {
+      Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
+      new Chart(canvas, {
+        type: 'radar',
+        data: {
+          labels: ['Accessibilité', 'Fluidité', 'Clarté', 'Plaisir', 'Perf. commerciale'],
+          datasets: [{ data: [sn.accessibilite, sn.fluidite, sn.clarte, sn.plaisir, sn.performance_commerciale], backgroundColor: 'rgba(200,241,53,0.12)', borderColor: '#c8f135', borderWidth: 2, pointBackgroundColor: '#c8f135', pointRadius: 4 }]
+        },
+        options: {
+          responsive: false,
+          scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, color: 'rgba(255,255,255,0.2)', font: { size: 10 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.08)' }, angleLines: { color: 'rgba(255,255,255,0.08)' }, pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 11 } } } },
+          plugins: { legend: { display: false } }
+        }
+      })
+    })
+  }, [onglet, rapport])

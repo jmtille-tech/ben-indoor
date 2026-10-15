@@ -1,0 +1,37 @@
+// ARCHIVE — onglet Score NeuroPlay (radar + barres + teaser) de la page rapport, état physio-v1. Utilise : sn, hasScore, scoreColor, TeaserConnecte.
+        {/* ── SCORE ── */}
+        {showSection('score') && (
+          hasScore ? (
+            <div>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>Score NeuroPlay — signature Neuroplay Xpériences</p>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                <canvas id="radarChart" width="300" height="300" />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '16px' }}>
+                {[
+                  { label: 'Accessibilité', val: sn.accessibilite },
+                  { label: 'Fluidité', val: sn.fluidite },
+                  { label: 'Clarté', val: sn.clarte },
+                  { label: 'Plaisir', val: sn.plaisir },
+                  { label: 'Perf. commerciale', val: sn.performance_commerciale },
+                ].map(({ label, val }) => (
+                  <div key={label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '16px', textAlign: 'center', border: '0.5px solid rgba(255,255,255,0.07)' }}>
+                    <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</p>
+                    <div style={{ height: '60px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '8px' }}>
+                      <div style={{ width: '32px', background: scoreColor(val), borderRadius: '4px 4px 0 0', height: `${val * 6}px` }} />
+                    </div>
+                    <p style={{ fontSize: '22px', fontWeight: '700', color: scoreColor(val), margin: 0 }}>{val}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 4px' }}>Score global NeuroPlay</p>
+                <p style={{ fontSize: '36px', fontWeight: '700', color: '#c8f135', margin: 0 }}>
+                  {((sn.accessibilite + sn.fluidite + sn.clarte + sn.plaisir + sn.performance_commerciale) / 5).toFixed(1)}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <TeaserConnecte icone="🎯" titre="Score NeuroPlay — Signature globale" description="Le Score NeuroPlay agrège les données physiologiques et comportementales en 5 dimensions clés : Accessibilité, Fluidité, Clarté, Plaisir et Performance commerciale. Ce scoring enrichi est généré à partir des données captées lors d'un diagnostic connecté." />
+          )
+        )}
