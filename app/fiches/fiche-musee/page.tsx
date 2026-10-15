@@ -105,8 +105,8 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#EAF3DE; color:#3B6D11;">Neuroaccess</div>
-      <div class="cell-title">Diagnostic cognitif et connecté du parcours visiteur</div>
-      <div class="cell-desc">Cartographie les zones chaudes/froides, frictions et moments waouh — via observation cognitive terrain et capteurs physiologiques (EDA &amp; HRV) portés par les visiteurs</div>
+      <div class="cell-title">Diagnostic cognitif du parcours visiteur</div>
+      <div class="cell-desc">Cartographie les zones chaudes/froides, frictions et moments waouh — via observation cognitive terrain auprès des visiteurs</div>
       <div class="cell-chiffre" style="color:#639922;">+25% temps de visite là où l'émerveillement est activé*</div>
     </div>
   </div>
@@ -121,7 +121,7 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     <div class="cell">
       <div class="cell-badge" style="background:#FAEEDA; color:#854F0B;">Expérience Signature</div>
       <div class="cell-title">Co-construction d'une expérience immersive unique</div>
-      <div class="cell-desc">Basée sur les données cognitives et physiologiques réelles (EDA &amp; HRV) — crée un parcours immersif différenciant ancré dans l'ADN du lieu, monétisable en offre premium ou BtoB</div>
+      <div class="cell-desc">Basée sur les données cognitives réelles du diagnostic — crée un parcours immersif différenciant ancré dans l'ADN du lieu, monétisable en offre premium ou BtoB</div>
       <div class="cell-chiffre" style="color:#BA7517;">47% des visiteurs acceptent un prix plus élevé pour une expérience personnalisée*</div>
     </div>
   </div>
@@ -135,8 +135,8 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#E6F1FB; color:#185FA5;">Neurotaste</div>
-      <div class="cell-title">Diagnostic cognitif et connecté de l'expérience F&amp;B</div>
-      <div class="cell-desc">Identifie chaque friction à l'achat via observation terrain et mesures physiologiques (EDA &amp; HRV) — signalétique, ambiance, présentation — pour maximiser la conversion sur les postes à forte marge</div>
+      <div class="cell-title">Diagnostic cognitif de l'expérience F&amp;B</div>
+      <div class="cell-desc">Identifie chaque friction à l'achat via observation et questionnaires terrain — signalétique, ambiance, présentation — pour maximiser la conversion sur les postes à forte marge</div>
       <div class="cell-chiffre" style="color:#185FA5;">Un musée performant génère en boutique-café l'équivalent de 30 à 40% de ses recettes billetterie*</div>
     </div>
   </div>
@@ -150,8 +150,8 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#FBEAF0; color:#993556;">BEN global</div>
-      <div class="cell-title">Diagnostic cognitif et connecté — base de fidélisation</div>
-      <div class="cell-desc">Documente l'ADN expérience du lieu via données terrain et capteurs physiologiques (EDA &amp; HRV) — pour construire des offres de fidélisation et des expériences BtoB ancrées dans le vécu réel des visiteurs</div>
+      <div class="cell-title">Diagnostic cognitif — base de fidélisation</div>
+      <div class="cell-desc">Documente l'ADN expérience du lieu via données cognitives de terrain — pour construire des offres de fidélisation et des expériences BtoB ancrées dans le vécu réel des visiteurs</div>
       <div class="cell-chiffre" style="color:#993556;">Certains musées en région affichent +15% de fréquentation en 2025 grâce au renouvellement de l'expérience*</div>
     </div>
   </div>

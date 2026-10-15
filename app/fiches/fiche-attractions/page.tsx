@@ -105,8 +105,8 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#EAF3DE; color:#3B6D11;">Neuroaccess</div>
-      <div class="cell-title">Diagnostic cognitif et connecté du parcours visiteur</div>
-      <div class="cell-desc">Cartographie les zones chaudes/froides, frictions et moments waouh — via observation cognitive terrain et capteurs physiologiques (EDA &amp; HRV) portés par les visiteurs</div>
+      <div class="cell-title">Diagnostic cognitif du parcours visiteur</div>
+      <div class="cell-desc">Cartographie les zones chaudes/froides, frictions et moments waouh — via observation cognitive terrain auprès des visiteurs</div>
       <div class="cell-chiffre" style="color:#639922;">+25% temps de visite là où l'émerveillement est activé*</div>
     </div>
   </div>
@@ -120,8 +120,8 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#FAEEDA; color:#854F0B;">Neurotaste</div>
-      <div class="cell-title">Diagnostic cognitif et connecté de l'expérience F&amp;B</div>
-      <div class="cell-desc">Identifie chaque friction à l'achat via observation terrain et mesures physiologiques (EDA &amp; HRV) — signalétique, ambiance, accueil, présentation produits — pour maximiser la conversion sur les postes à forte marge</div>
+      <div class="cell-title">Diagnostic cognitif de l'expérience F&amp;B</div>
+      <div class="cell-desc">Identifie chaque friction à l'achat via observation et questionnaires terrain — signalétique, ambiance, accueil, présentation produits — pour maximiser la conversion sur les postes à forte marge</div>
       <div class="cell-chiffre" style="color:#BA7517;">Un parc performant génère en F&B l'équivalent de son prix d'entrée*</div>
     </div>
   </div>
@@ -135,8 +135,8 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     </div>
     <div class="cell">
       <div class="cell-badge" style="background:#E6F1FB; color:#185FA5;">BEN global</div>
-      <div class="cell-title">Diagnostic cognitif et connecté — base d'expansion saisonnière</div>
-      <div class="cell-desc">Documente les ressorts émotionnels et cognitifs du site via données terrain et capteurs physiologiques (EDA &amp; HRV) — pour concevoir des offres hors-saison engageantes et déployer de nouvelles zones sans reproduire les frictions existantes</div>
+      <div class="cell-title">Diagnostic cognitif — base d'expansion saisonnière</div>
+      <div class="cell-desc">Documente les ressorts émotionnels et cognitifs du site via données cognitives de terrain — pour concevoir des offres hors-saison engageantes et déployer de nouvelles zones sans reproduire les frictions existantes</div>
       <div class="cell-chiffre" style="color:#185FA5;">Certains parcs multiplient par 2 leur fréquentation hors-été grâce aux événements thématiques*</div>
     </div>
   </div>
@@ -151,7 +151,7 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justi
     <div class="cell">
       <div class="cell-badge" style="background:#FBEAF0; color:#993556;">Expérience Signature</div>
       <div class="cell-title">Co-construction d'une expérience unique</div>
-      <div class="cell-desc">Basée sur les données cognitives et physiologiques réelles (EDA &amp; HRV) — crée un moment différenciant mémorable pour les visiteurs premium et les entreprises en quête d'originalité</div>
+      <div class="cell-desc">Basée sur les données cognitives réelles du diagnostic — crée un moment différenciant mémorable pour les visiteurs premium et les entreprises en quête d'originalité</div>
       <div class="cell-chiffre" style="color:#993556;">47% des visiteurs acceptent un prix plus élevé pour une expérience personnalisée*</div>
     </div>
   </div>
