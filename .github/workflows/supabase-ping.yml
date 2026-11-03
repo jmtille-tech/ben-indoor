@@ -1,7 +1,7 @@
 name: Supabase Ping
 on:
   schedule:
-    - cron: '0 8 * * 1'
+    - cron: '0 8 * * 1,4'
   workflow_dispatch:
 
 jobs:
@@ -10,6 +10,6 @@ jobs:
     steps:
       - name: Ping Supabase
         run: |
-          curl -s "https://uzeeymmiodlgpcelczua.supabase.co/rest/v1/solutions?select=id&limit=1" \
+          curl -fsS "https://uzeeymmiodlgpcelczua.supabase.co/rest/v1/solutions?select=id&limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
