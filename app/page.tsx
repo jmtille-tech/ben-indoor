@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 
+const MESSAGE_INDISPONIBLE = 'Service momentanément indisponible. Réessayez dans quelques minutes ou contactez Neuroplay Xpériences.'
+
 export default function Home() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -11,8 +13,21 @@ export default function Home() {
   async function handleLogin() {
     setLoading(true)
     setError('')
-    const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
-    if (authError) { setError('Email ou mot de passe incorrect'); setLoading(false); return }
+    let result
+    try {
+      result = await supabase.auth.signInWithPassword({ email, password })
+    } catch {
+      setError(MESSAGE_INDISPONIBLE); setLoading(false); return
+    }
+    const { data, error: authError } = result
+    if (authError) {
+      const { status, code } = authError as { status?: number; code?: string }
+      if (code === 'email_not_confirmed') setError('Adresse email non confirmée')
+      else if (code === 'invalid_credentials' || status === 400 || status === 401) setError('Email ou mot de passe incorrect')
+      else setError(MESSAGE_INDISPONIBLE)
+      setLoading(false)
+      return
+    }
     const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', data.user.id).single()
     window.location.href = profile?.role === 'admin' ? '/dashboard' : '/client'
     setLoading(false)
