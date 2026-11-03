@@ -736,9 +736,10 @@ export default function Terrain() {
     }
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch('/api/generer-rapport', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}) },
         body: JSON.stringify({
           notes: notesAvecScores,
           scores_calcules: scoresCalcules,

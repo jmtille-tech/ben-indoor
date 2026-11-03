@@ -3,7 +3,8 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+// Clé de service : l'écriture des rapports se fait côté serveur, après vérification de l'utilisateur
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY ?? '')
 
 function generateShareToken(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -239,6 +240,14 @@ Remplace toutes les valeurs par celles issues de tes observations terrain. L'ana
 }
 
 export async function POST(req: NextRequest) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json({ error: 'Configuration serveur incomplète (SUPABASE_SERVICE_ROLE_KEY)' }, { status: 500 })
+  }
+  const token = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
+  if (!token) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+  const { data: authData, error: authErr } = await supabase.auth.getUser(token)
+  if (authErr || !authData.user) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+
   try {
     const { notes, scores_calcules, reponses_neuro, client_nom, client_id, mission_id, type_mission, type_diagnostic } = await req.json()
     console.log('BEN API reçu:', { client_nom, client_id, mission_id, type_mission, type_diagnostic })
